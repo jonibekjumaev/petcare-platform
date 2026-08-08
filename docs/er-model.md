@@ -40,7 +40,7 @@ erDiagram
     enum petStatus
     string petName
     string petBreed
-    int petAge
+    int petAgeMonths
     double petWeight
     string petImage
     string petNotes
@@ -121,22 +121,22 @@ erDiagram
 
 ## Enum values
 
-| Enum | Values |
-|---|---|
-| `memberType` | USER, ADMIN |
-| `memberStatus` | ACTIVE, BLOCK, DELETE |
-| `petType` | DOG, CAT, BIRD, FISH, RODENT, OTHER |
-| `petGender` | MALE, FEMALE, UNKNOWN |
-| `petStatus` | ACTIVE, DELETE |
+| Enum              | Values                                |
+| ----------------- | ------------------------------------- |
+| `memberType`      | USER, ADMIN                           |
+| `memberStatus`    | ACTIVE, BLOCK, DELETE                 |
+| `petType`         | DOG, CAT, BIRD, FISH, RODENT, OTHER   |
+| `petGender`       | MALE, FEMALE, UNKNOWN                 |
+| `petStatus`       | ACTIVE, DELETE                        |
 | `productCategory` | FOOD, TOY, HYGIENE, ACCESSORY, HEALTH |
-| `productPetType` | DOG, CAT, BIRD, FISH, RODENT, ALL |
-| `productStatus` | PAUSE, PROCESS, DELETE |
-| `productSize` | SMALL, MEDIUM, LARGE |
-| `orderStatus` | PAUSE, PROCESS, FINISH, DELETE |
-| `viewGroup` | PRODUCT, PET |
-| `likeGroup` | PRODUCT |
-| `sessionStatus` | ACTIVE, ARCHIVED |
-| `messageRole` | USER, ASSISTANT |
+| `productPetType`  | DOG, CAT, BIRD, FISH, RODENT, ALL     |
+| `productStatus`   | PAUSE, PROCESS, DELETE                |
+| `productSize`     | SMALL, MEDIUM, LARGE                  |
+| `orderStatus`     | PAUSE, PROCESS, FINISH, DELETE        |
+| `viewGroup`       | PRODUCT, PET                          |
+| `likeGroup`       | PRODUCT                               |
+| `sessionStatus`   | ACTIVE, ARCHIVED                      |
+| `messageRole`     | USER, ASSISTANT                       |
 
 ---
 

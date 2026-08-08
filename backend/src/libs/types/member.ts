@@ -40,3 +40,9 @@ export interface MemberUpdateInput {
   memberAddress?: string;
   memberImage?: string;
 }
+
+export interface TokenPayload {
+  _id: string;
+  memberNick: string;
+  memberType: MemberType;
+}

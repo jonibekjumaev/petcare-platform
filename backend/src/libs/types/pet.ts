@@ -30,7 +30,7 @@ export interface PetInput {
 }
 
 export interface PetUpdateInput {
-  _id: ObjectId;
+  _id: string;
   petType?: PetType;
   petGender?: PetGender;
   petStatus?: PetStatus;

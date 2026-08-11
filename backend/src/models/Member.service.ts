@@ -1,8 +1,14 @@
 import bcrypt from "bcryptjs";
 import MemberModel from "../schema/Member.model";
-import { LoginInput, Member, MemberInput } from "../libs/types/member";
+import {
+  LoginInput,
+  Member,
+  MemberInput,
+  MemberUpdateInput,
+} from "../libs/types/member";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { MemberStatus } from "../libs/enums/member.enum";
+import { shapeIntoMongooseObjectId } from "../libs/config";
 
 class MemberService {
   private readonly memberModel;
@@ -59,6 +65,32 @@ class MemberService {
 
     delete member.memberPassword;
     return member;
+  }
+
+  public async memberDetail(memberId?: string): Promise<Member> {
+    if (!memberId)
+      throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
+
+    const id = shapeIntoMongooseObjectId(memberId);
+    const result = await this.memberModel
+      .findOne({ _id: id, memberStatus: MemberStatus.ACTIVE })
+      .exec();
+
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    return result;
+  }
+
+  public async updateMember(input: MemberUpdateInput): Promise<Member> {
+    const id = shapeIntoMongooseObjectId(input._id);
+    const result = await this.memberModel
+      .findOneAndUpdate({ _id: id }, input, { new: true })
+      .lean()
+      .exec();
+
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    return result;
   }
 }
 

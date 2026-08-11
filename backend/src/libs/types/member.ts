@@ -1,5 +1,6 @@
 import { ObjectId } from "mongoose";
 import { MemberStatus, MemberType } from "../enums/member.enum";
+import { Request } from "express";
 
 export interface Member {
   _id: ObjectId;
@@ -32,7 +33,7 @@ export interface LoginInput {
 }
 
 export interface MemberUpdateInput {
-  _id: ObjectId;
+  _id: string;
   memberStatus?: MemberStatus;
   memberNick?: string;
   memberPhone?: string;
@@ -45,4 +46,8 @@ export interface TokenPayload {
   _id: string;
   memberNick: string;
   memberType: MemberType;
+}
+
+export interface ExtendedRequest extends Request {
+  member?: TokenPayload;
 }

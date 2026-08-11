@@ -1,10 +1,15 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import AuthService from "../libs/AuthService";
 import Errors, { HttpCode, Message } from "../libs/Errors";
+import { ExtendedRequest } from "../libs/types/member";
 
 const authService = new AuthService();
 
-export const verifyAuth = (req: Request, res: Response, next: NextFunction) => {
+export const verifyAuth = (
+  req: ExtendedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

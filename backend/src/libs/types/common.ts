@@ -1,3 +1,3 @@
-export interface T {
+export interface AnyRecord {
   [key: string]: any;
 }

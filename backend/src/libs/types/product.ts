@@ -36,7 +36,7 @@ export interface ProductInput {
 }
 
 export interface ProductUpdateInput {
-  _id: ObjectId;
+  _id: string;
   productStatus?: ProductStatus;
   productCategory?: ProductCategory;
   productPetType?: ProductPetType;
@@ -46,4 +46,13 @@ export interface ProductUpdateInput {
   productPrice?: number;
   productLeftCount?: number;
   productImages?: string[];
+}
+
+export interface ProductInquiry {
+  page: number;
+  limit: number;
+  order?: "createdAt" | "productPrice" | "productViews";
+  productPetType?: ProductPetType;
+  productCategory?: ProductCategory;
+  search?: string;
 }

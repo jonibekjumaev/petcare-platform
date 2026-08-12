@@ -11,5 +11,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(router);
 app.use(errorHandler);
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 export default app;

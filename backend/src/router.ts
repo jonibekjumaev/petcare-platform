@@ -6,6 +6,13 @@ import {
   updateMember,
 } from "./controllers/member.controller";
 import { verifyAuth } from "./middlewares/auth.middleware";
+import {
+  createPet,
+  deletePet,
+  getAllPets,
+  getPet,
+  updatePet,
+} from "./controllers/pet.controller";
 
 const router = Router();
 
@@ -17,5 +24,13 @@ router.get("/member/detail", verifyAuth, memberDetail);
 router.post("/member/update", verifyAuth, updateMember);
 
 /** Pet  */
+
+router.post("/pet/create", verifyAuth, createPet);
+router.get("/pet/all", verifyAuth, getAllPets);
+router.get("/pet/:id", verifyAuth, getPet);
+router.post("/pet/update", verifyAuth, updatePet);
+router.post("/pet/delete", verifyAuth, deletePet);
+
+/** Products  */
 
 export default router;

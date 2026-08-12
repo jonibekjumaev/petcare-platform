@@ -81,3 +81,5 @@ class PetService {
     return result;
   }
 }
+
+export default PetService;

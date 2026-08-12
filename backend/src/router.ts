@@ -13,6 +13,12 @@ import {
   getPet,
   updatePet,
 } from "./controllers/pet.controller";
+import {
+  createProduct,
+  getAllProducts,
+  getProduct,
+  updateProduct,
+} from "./controllers/product.controller";
 
 const router = Router();
 
@@ -32,5 +38,9 @@ router.post("/pet/update", verifyAuth, updatePet);
 router.post("/pet/delete", verifyAuth, deletePet);
 
 /** Products  */
+router.post("/product/create", verifyAuth, createProduct);
+router.get("/product/all", getAllProducts);
+router.get("/product/:id", getProduct);
+router.post("/product/update", verifyAuth, updateProduct);
 
 export default router;

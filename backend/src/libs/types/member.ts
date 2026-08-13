@@ -47,13 +47,6 @@ export interface TokenPayload {
   memberNick: string;
   memberType: MemberType;
 }
-
 export interface ExtendedRequest extends Request {
   member?: TokenPayload;
-}
-
-export interface AdminRequest extends Request {
-  member: TokenPayload;
-  file?: Express.Multer.File;
-  files?: Express.Multer.File[];
 }

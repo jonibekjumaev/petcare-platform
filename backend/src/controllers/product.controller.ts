@@ -20,6 +20,7 @@ export const createProduct = async (
     if (req.member?.memberType !== MemberType.ADMIN) {
       throw new Errors(HttpCode.FORBIDDEN, Message.NOT_AUTHENTICATED);
     }
+
     const files = req.files as Express.Multer.File[] | undefined;
 
     if (!files || files.length === 0) {
@@ -57,7 +58,6 @@ export const getProduct = async (
 ): Promise<void> => {
   try {
     const productId = req.params.id as string;
-
     const result = await productService.getProduct(productId);
 
     res.status(HttpCode.OK).json(result);
@@ -101,7 +101,18 @@ export const updateProduct = async (
       throw new Errors(HttpCode.FORBIDDEN, Message.NOT_AUTHENTICATED);
     }
 
-    const input: ProductUpdateInput = req.body;
+    const input: ProductUpdateInput = { ...req.body };
+
+    if (input.productPrice) input.productPrice = Number(input.productPrice);
+    if (input.productLeftCount)
+      input.productLeftCount = Number(input.productLeftCount);
+
+    const files = req.files as Express.Multer.File[] | undefined;
+    if (files && files.length > 0) {
+      input.productImages = files.map(
+        (file) => `/uploads/products/${file.filename}`,
+      );
+    }
 
     const result = await productService.updateProduct(input);
 

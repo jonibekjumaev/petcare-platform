@@ -1,4 +1,3 @@
-// src/libs/utils/multer.config.ts
 import multer, { FileFilterCallback } from "multer";
 import { Request } from "express";
 import path from "path";

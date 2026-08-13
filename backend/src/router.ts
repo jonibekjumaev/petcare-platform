@@ -19,6 +19,7 @@ import {
   getProduct,
   updateProduct,
 } from "./controllers/product.controller";
+import { uploadProductImages } from "./libs/utils/multer.config";
 
 const router = Router();
 
@@ -38,9 +39,19 @@ router.post("/pet/update", verifyAuth, updatePet);
 router.post("/pet/delete", verifyAuth, deletePet);
 
 /** Products  */
-router.post("/product/create", verifyAuth, createProduct);
+router.post(
+  "/product/create",
+  verifyAuth,
+  uploadProductImages.array("productImages", 5),
+  createProduct,
+);
 router.get("/product/all", getAllProducts);
 router.get("/product/:id", getProduct);
-router.post("/product/update", verifyAuth, updateProduct);
+router.post(
+  "/product/update",
+  verifyAuth,
+  uploadProductImages.array("productImages", 5),
+  updateProduct,
+);
 
 export default router;

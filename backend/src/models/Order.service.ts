@@ -1,0 +1,189 @@
+import { shapeIntoMongooseObjectId } from "../libs/config";
+import Errors, { HttpCode, Message } from "../libs/Errors";
+import {
+  Order,
+  OrderInput,
+  OrderInquiry,
+  OrderUpdateInput,
+} from "../libs/types/order";
+import OrderModel from "../schema/Order.model";
+import OrderItemModel from "../schema/OrderItem.model";
+import ProductModel from "../schema/Product.model";
+import { ProductStatus } from "../libs/enums/product.enum";
+import { OrderWithItems } from "../libs/types/member";
+
+class OrderService {
+  private readonly orderModel;
+  private readonly orderItemModel;
+  private readonly productModel;
+
+  constructor() {
+    this.orderModel = OrderModel;
+    this.orderItemModel = OrderItemModel;
+    this.productModel = ProductModel;
+  }
+
+  public async createOrder(
+    memberId: string,
+    input: OrderInput,
+  ): Promise<Order> {
+    const memberObjectId = shapeIntoMongooseObjectId(memberId);
+    const petObjectId = shapeIntoMongooseObjectId(input.petId);
+
+    let amount = 0;
+    const orderItemsData: {
+      productId: string;
+      itemQuantity: number;
+      itemPrice: number;
+    }[] = [];
+
+    for (const item of input.items) {
+      const productObjectId = shapeIntoMongooseObjectId(item.productId);
+
+      const updatedProduct = await this.productModel
+        .findOneAndUpdate(
+          {
+            _id: productObjectId,
+            productStatus: { $ne: ProductStatus.DELETE },
+            productLeftCount: { $gte: item.itemQuantity },
+          },
+          { $inc: { productLeftCount: -item.itemQuantity } },
+          { new: true },
+        )
+        .exec();
+
+      if (!updatedProduct) {
+        throw new Errors(HttpCode.BAD_REQUEST, Message.NO_DATA_FOUND);
+      }
+
+      const itemPrice = updatedProduct.productPrice;
+      amount += itemPrice * item.itemQuantity;
+
+      orderItemsData.push({
+        productId: item.productId,
+        itemQuantity: item.itemQuantity,
+        itemPrice,
+      });
+    }
+
+    try {
+      const newOrder = await this.orderModel.create({
+        memberId: memberObjectId,
+        petId: petObjectId,
+        orderTotal: amount + input.orderDelivery,
+        orderDelivery: input.orderDelivery,
+      });
+
+      await Promise.all(
+        orderItemsData.map((item) =>
+          this.orderItemModel.create({
+            orderId: newOrder._id,
+            productId: shapeIntoMongooseObjectId(item.productId),
+            itemQuantity: item.itemQuantity,
+            itemPrice: item.itemPrice,
+          }),
+        ),
+      );
+
+      return newOrder;
+    } catch (err) {
+      console.error("Error, model: createOrder:", err);
+      throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED);
+    }
+  }
+
+  public async getAllOrders(
+    member: string,
+    input: OrderInquiry,
+  ): Promise<OrderWithItems[]> {
+    const memberId = shapeIntoMongooseObjectId(member);
+
+    const match: Record<string, any> = { memberId };
+    if (input.orderStatus) match.orderStatus = input.orderStatus;
+
+    const result = await this.orderModel
+      .aggregate([
+        { $match: match },
+        { $sort: { createdAt: -1 } },
+        { $skip: (input.page - 1) * input.limit },
+        { $limit: input.limit },
+        {
+          $lookup: {
+            from: "orderitems",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "orderItems",
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "orderItems.productId",
+            foreignField: "_id",
+            as: "productData",
+          },
+        },
+      ])
+      .exec();
+
+    return result;
+  }
+
+  public async getOrder(
+    memberId: string,
+    orderId: string,
+  ): Promise<OrderWithItems> {
+    const memberObjectId = shapeIntoMongooseObjectId(memberId);
+    const orderObjectId = shapeIntoMongooseObjectId(orderId);
+
+    const result = await this.orderModel
+      .aggregate([
+        { $match: { _id: orderObjectId, memberId: memberObjectId } },
+        {
+          $lookup: {
+            from: "orderitems",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "orderItems",
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "orderItems.productId",
+            foreignField: "_id",
+            as: "productData",
+          },
+        },
+      ])
+      .exec();
+
+    if (!result || result.length === 0) {
+      throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+    }
+
+    return result[0];
+  }
+
+  public async updateOrder(
+    memberId: string,
+    input: OrderUpdateInput,
+  ): Promise<Order> {
+    const memberObjectId = shapeIntoMongooseObjectId(memberId);
+    const orderObjectId = shapeIntoMongooseObjectId(input._id);
+
+    const result = await this.orderModel
+      .findOneAndUpdate(
+        { _id: orderObjectId, memberId: memberObjectId },
+        { orderStatus: input.orderStatus },
+        { new: true },
+      )
+      .exec();
+
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    return result;
+  }
+}
+
+export default OrderService;

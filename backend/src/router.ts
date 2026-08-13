@@ -20,6 +20,12 @@ import {
   updateProduct,
 } from "./controllers/product.controller";
 import { uploadProductImages } from "./libs/utils/multer.config";
+import {
+  createOrder,
+  getAllOrders,
+  getOrder,
+  updateOrder,
+} from "./controllers/order.controller";
 
 const router = Router();
 
@@ -53,5 +59,12 @@ router.post(
   uploadProductImages.array("productImages", 5),
   updateProduct,
 );
+
+/** Order */
+
+router.post("/order/create", verifyAuth, createOrder);
+router.get("/order/all", verifyAuth, getAllOrders);
+router.get("/order/:id", verifyAuth, getOrder);
+router.post("/order/update", verifyAuth, updateOrder);
 
 export default router;

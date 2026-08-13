@@ -50,3 +50,8 @@ export interface TokenPayload {
 export interface ExtendedRequest extends Request {
   member?: TokenPayload;
 }
+
+export interface OrderWithItems extends Order {
+  orderItems: OrderItem[];
+  productData: Product[];
+}

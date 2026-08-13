@@ -22,14 +22,24 @@ export interface OrderItem {
   updatedAt: Date;
 }
 
+export interface OrderItemInput {
+  productId: string;
+  itemQuantity: number;
+}
+
 export interface OrderInput {
-  petId: ObjectId;
+  petId: string;
   orderDelivery: number;
   items: OrderItemInput[];
 }
 
-export interface OrderItemInput {
-  itemQuantity: number;
-  productId: ObjectId;
-  orderId?: ObjectId;
+export interface OrderUpdateInput {
+  _id: string;
+  orderStatus?: OrderStatus;
+}
+
+export interface OrderInquiry {
+  page: number;
+  limit: number;
+  orderStatus?: OrderStatus;
 }

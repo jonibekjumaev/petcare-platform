@@ -26,6 +26,12 @@ import {
   getOrder,
   updateOrder,
 } from "./controllers/order.controller";
+import {
+  createSession,
+  getAllSessions,
+  getSessionMessages,
+  sendMessage,
+} from "./controllers/chat.controller";
 
 const router = Router();
 
@@ -66,5 +72,12 @@ router.post("/order/create", verifyAuth, createOrder);
 router.get("/order/all", verifyAuth, getAllOrders);
 router.get("/order/:id", verifyAuth, getOrder);
 router.post("/order/update", verifyAuth, updateOrder);
+
+/** Chat */
+
+router.post("/chat/session/create", verifyAuth, createSession);
+router.get("/chat/session/all", verifyAuth, getAllSessions);
+router.get("/chat/session/:id", verifyAuth, getSessionMessages);
+router.post("/chat/message", verifyAuth, sendMessage);
 
 export default router;

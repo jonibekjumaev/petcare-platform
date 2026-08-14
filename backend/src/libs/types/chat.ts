@@ -21,10 +21,10 @@ export interface ChatMessage {
 }
 
 export interface ChatSessionInput {
-  petId: ObjectId;
+  petId: string;
 }
 
 export interface ChatMessageInput {
-  sessionId: ObjectId;
+  sessionId: string;
   messageContent: string;
 }

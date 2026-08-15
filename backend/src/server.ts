@@ -1,13 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
+import { MONGO_URL } from "./libs/config";
 import mongoose from "mongoose";
 import app from "./app";
-
-const MONGO_URL = process.env.MONGO_URL;
-if (!MONGO_URL) {
-  console.error("MONGO_URL is missing in .env");
-  process.exit(1);
-}
 
 const PORT = process.env.PORT ?? 3010;
 

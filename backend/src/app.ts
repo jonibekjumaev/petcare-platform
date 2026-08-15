@@ -5,6 +5,7 @@ import { errorHandler } from "./middlewares/error.middleware";
 import router from "./router";
 import session from "express-session";
 import ConnectMongoDB from "connect-mongodb-session";
+import routerAdmin from "./router-admin";
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.set("views", path.join(__dirname, "..", "views"));
 app.set("view engine", "ejs");
 
 //Router
+app.use(routerAdmin);
 app.use(router);
 
 //ErrorHandler

@@ -57,3 +57,9 @@ export interface OrderWithItems extends Order {
   orderItems: OrderItem[];
   productData: Product[];
 }
+
+export interface MemberInquiry {
+  page: number;
+  limit: number;
+  memberStatus?: MemberStatus;
+}

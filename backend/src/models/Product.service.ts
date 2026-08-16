@@ -77,6 +77,24 @@ class ProductService {
 
     return result;
   }
+
+  public async countProducts(): Promise<number> {
+    return this.productModel
+      .countDocuments({ productStatus: { $ne: ProductStatus.DELETE } })
+      .exec();
+  }
+
+  public async getProductForEdit(productId: string): Promise<Product> {
+    const id = shapeIntoMongooseObjectId(productId);
+
+    const result = await this.productModel
+      .findOne({ _id: id, productStatus: { $ne: ProductStatus.DELETE } })
+      .exec();
+
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    return result;
+  }
 }
 
 export default ProductService;

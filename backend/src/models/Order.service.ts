@@ -11,6 +11,8 @@ import OrderItemModel from "../schema/OrderItem.model";
 import ProductModel from "../schema/Product.model";
 import { ProductStatus } from "../libs/enums/product.enum";
 import { OrderWithItems } from "../libs/types/member";
+import { AnyRecord } from "../libs/types/common";
+import { OrderStatus } from "../libs/enums/order.enum";
 
 class OrderService {
   private readonly orderModel;
@@ -176,6 +178,96 @@ class OrderService {
       .findOneAndUpdate(
         { _id: orderObjectId, memberId: memberObjectId },
         { orderStatus: input.orderStatus },
+        { new: true },
+      )
+      .exec();
+
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    return result;
+  }
+
+  public async countOrders(): Promise<number> {
+    return this.orderModel.countDocuments({}).exec();
+  }
+
+  public async getAllOrdersForAdmin(
+    input: OrderInquiry,
+  ): Promise<OrderWithItems[]> {
+    const match: AnyRecord = {};
+    if (input.orderStatus) match.orderStatus = input.orderStatus;
+
+    const result = await this.orderModel
+      .aggregate([
+        { $match: match },
+        { $sort: { createdAt: -1 } },
+        { $skip: (input.page - 1) * input.limit },
+        { $limit: input.limit },
+        {
+          $lookup: {
+            from: "orderitems",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "orderItems",
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "orderItems.productId",
+            foreignField: "_id",
+            as: "productData",
+          },
+        },
+        {
+          $lookup: {
+            from: "members",
+            localField: "memberId",
+            foreignField: "_id",
+            as: "memberData",
+          },
+        },
+      ])
+      .exec();
+
+    return result;
+  }
+
+  public async updateOrderStatusForAdmin(
+    orderId: string,
+    newStatus: OrderStatus,
+  ): Promise<Order> {
+    const orderObjectId = shapeIntoMongooseObjectId(orderId);
+
+    const existingOrder = await this.orderModel.findById(orderObjectId).exec();
+    if (!existingOrder) {
+      throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+    }
+
+    const isBeingCanceledForFirstTime =
+      existingOrder.orderStatus !== OrderStatus.DELETE &&
+      newStatus === OrderStatus.DELETE;
+
+    if (isBeingCanceledForFirstTime) {
+      const items = await this.orderItemModel
+        .find({ orderId: orderObjectId })
+        .exec();
+
+      await Promise.all(
+        items.map((item) =>
+          this.productModel
+            .findByIdAndUpdate(item.productId, {
+              $inc: { productLeftCount: item.itemQuantity },
+            })
+            .exec(),
+        ),
+      );
+    }
+
+    const result = await this.orderModel
+      .findOneAndUpdate(
+        { _id: orderObjectId },
+        { orderStatus: newStatus },
         { new: true },
       )
       .exec();

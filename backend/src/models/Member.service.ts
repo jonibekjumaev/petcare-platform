@@ -4,11 +4,13 @@ import {
   LoginInput,
   Member,
   MemberInput,
+  MemberInquiry,
   MemberUpdateInput,
 } from "../libs/types/member";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { MemberStatus } from "../libs/enums/member.enum";
 import { shapeIntoMongooseObjectId } from "../libs/config";
+import { AnyRecord } from "../libs/types/common";
 
 class MemberService {
   private readonly memberModel;
@@ -89,6 +91,27 @@ class MemberService {
       .exec();
 
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    return result;
+  }
+
+  public async countMembers(): Promise<number> {
+    return this.memberModel
+      .countDocuments({ memberStatus: { $ne: MemberStatus.DELETE } })
+      .exec();
+  }
+
+  public async getAllMembersForAdmin(input: MemberInquiry): Promise<Member[]> {
+    const match: AnyRecord = {};
+    if (input.memberStatus) match.memberStatus = input.memberStatus;
+
+    const result = await this.memberModel
+      .find(match)
+      .sort({ createdAt: -1 })
+      .skip((input.page - 1) * input.limit)
+      .limit(input.limit)
+      .lean()
+      .exec();
 
     return result;
   }

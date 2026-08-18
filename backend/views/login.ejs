@@ -1,0 +1,48 @@
+<!-- views/login.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetCare Admin — Login</title>
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="/css/login.css" />
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <h1 class="login-card__title">PetCare Admin</h1>
+    <p class="login-card__subtitle">Sign in to manage your store</p>
+
+    <% if (typeof error !== "undefined" && error) { %>
+      <div class="form-error"><%= error %></div>
+    <% } %>
+
+    <form action="/admin/login" method="POST" class="login-form">
+      <div class="form-group">
+        <label for="memberNick" class="form-label">Nickname</label>
+        <input
+          type="text"
+          id="memberNick"
+          name="memberNick"
+          class="form-input"
+          required
+          autofocus
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="memberPassword" class="form-label">Password</label>
+        <input
+          type="password"
+          id="memberPassword"
+          name="memberPassword"
+          class="form-input"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary login-form__submit">Sign In</button>
+    </form>
+  </div>
+</body>
+</html>

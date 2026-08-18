@@ -1,0 +1,88 @@
+<!-- views/orders.ejs -->
+<%
+  const statusBadgeClass = {
+    PAUSE: 'badge-warning',
+    PROCESS: 'badge-warning',
+    FINISH: 'badge-success',
+    DELETE: 'badge-danger',
+  };
+%>
+
+<div class="page-header">
+  <h1 class="page-title">Orders</h1>
+</div>
+
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="form-error"><%= error %></div>
+<% } %>
+
+<form action="/admin/order/all" method="GET" class="filter-bar">
+  <select name="orderStatus" class="form-select">
+    <option value="">All Statuses</option>
+    <option value="PAUSE" <%= inquiry.orderStatus === 'PAUSE' ? 'selected' : '' %>>Pause</option>
+    <option value="PROCESS" <%= inquiry.orderStatus === 'PROCESS' ? 'selected' : '' %>>Process</option>
+    <option value="FINISH" <%= inquiry.orderStatus === 'FINISH' ? 'selected' : '' %>>Finish</option>
+    <option value="DELETE" <%= inquiry.orderStatus === 'DELETE' ? 'selected' : '' %>>Cancelled</option>
+  </select>
+  <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+<% if (orders.length === 0) { %>
+  <div class="empty-state">No orders found.</div>
+<% } else { %>
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Products</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(function(order) { %>
+          <tr>
+            <td>
+              <%= order.memberData && order.memberData[0] ? order.memberData[0].memberNick : '—' %>
+            </td>
+            <td>
+              <% order.orderItems.forEach(function(item) { %>
+                <% const product = order.productData.find(function(p) { return String(p._id) === String(item.productId); }); %>
+                <div><%= product ? product.productName : 'Unknown' %> × <%= item.itemQuantity %></div>
+              <% }); %>
+            </td>
+            <td>$<%= order.orderTotal %></td>
+            <td>
+              <span class="badge <%= statusBadgeClass[order.orderStatus] %>"><%= order.orderStatus %></span>
+            </td>
+            <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+            <td>
+              <form action="/admin/order/<%= order._id %>" method="POST" class="status-form">
+                <select name="orderStatus" class="form-select form-select--sm">
+                  <option value="PAUSE" <%= order.orderStatus === 'PAUSE' ? 'selected' : '' %>>Pause</option>
+                  <option value="PROCESS" <%= order.orderStatus === 'PROCESS' ? 'selected' : '' %>>Process</option>
+                  <option value="FINISH" <%= order.orderStatus === 'FINISH' ? 'selected' : '' %>>Finish</option>
+                  <option value="DELETE" <%= order.orderStatus === 'DELETE' ? 'selected' : '' %>>Cancel</option>
+                </select>
+                <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <% if (inquiry.page > 1) { %>
+      <a href="/admin/order/all?page=<%= inquiry.page - 1 %>&limit=<%= inquiry.limit %>" class="btn btn-secondary btn-sm">Previous</a>
+    <% } %>
+    <span class="pagination__current">Page <%= inquiry.page %></span>
+    <% if (orders.length === inquiry.limit) { %>
+      <a href="/admin/order/all?page=<%= inquiry.page + 1 %>&limit=<%= inquiry.limit %>" class="btn btn-secondary btn-sm">Next</a>
+    <% } %>
+  </div>
+<% } %>

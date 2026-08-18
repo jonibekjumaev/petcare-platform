@@ -1,0 +1,123 @@
+<!-- views/product-form.ejs -->
+<div class="page-header">
+  <h1 class="page-title"><%= product ? 'Edit Product' : 'Add Product' %></h1>
+  <a href="/admin/product/all" class="btn btn-secondary">Back to list</a>
+</div>
+
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="form-error"><%= error %></div>
+<% } %>
+
+<div class="card">
+  <form
+    action="<%= product ? `/admin/product/${product._id}` : '/admin/product/create' %>"
+    method="POST"
+    enctype="multipart/form-data"
+    class="product-form"
+  >
+    <div class="form-group">
+      <label for="productName" class="form-label">Name</label>
+      <input
+        type="text"
+        id="productName"
+        name="productName"
+        class="form-input"
+        value="<%= product ? product.productName : '' %>"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="productDesc" class="form-label">Description</label>
+      <textarea id="productDesc" name="productDesc" class="form-textarea"><%= product ? (product.productDesc || '') : '' %></textarea>
+    </div>
+
+    <div class="product-form__row">
+      <div class="form-group">
+        <label for="productCategory" class="form-label">Category</label>
+        <select id="productCategory" name="productCategory" class="form-select" required>
+          <option value="FOOD" <%= product && product.productCategory === 'FOOD' ? 'selected' : '' %>>Food</option>
+          <option value="TOY" <%= product && product.productCategory === 'TOY' ? 'selected' : '' %>>Toy</option>
+          <option value="ACCESSORY" <%= product && product.productCategory === 'ACCESSORY' ? 'selected' : '' %>>Accessory</option>
+          <option value="SUPPLEMENT" <%= product && product.productCategory === 'SUPPLEMENT' ? 'selected' : '' %>>Supplement</option>
+          <option value="HYGIENE" <%= product && product.productCategory === 'HYGIENE' ? 'selected' : '' %>>Hygiene</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="productPetType" class="form-label">Pet Type</label>
+        <select id="productPetType" name="productPetType" class="form-select" required>
+          <option value="DOG" <%= product && product.productPetType === 'DOG' ? 'selected' : '' %>>Dog</option>
+          <option value="CAT" <%= product && product.productPetType === 'CAT' ? 'selected' : '' %>>Cat</option>
+          <option value="FISH" <%= product && product.productPetType === 'FISH' ? 'selected' : '' %>>Fish</option>
+          <option value="ALL" <%= product && product.productPetType === 'ALL' ? 'selected' : '' %>>All Pets</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="productSize" class="form-label">Size</label>
+        <select id="productSize" name="productSize" class="form-select" required>
+          <option value="SMALL" <%= product && product.productSize === 'SMALL' ? 'selected' : '' %>>Small</option>
+          <option value="MEDIUM" <%= product && product.productSize === 'MEDIUM' ? 'selected' : '' %>>Medium</option>
+          <option value="LARGE" <%= product && product.productSize === 'LARGE' ? 'selected' : '' %>>Large</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="product-form__row">
+      <div class="form-group">
+        <label for="productPrice" class="form-label">Price</label>
+        <input
+          type="number"
+          id="productPrice"
+          name="productPrice"
+          class="form-input"
+          value="<%= product ? product.productPrice : '' %>"
+          min="0"
+          step="0.01"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="productLeftCount" class="form-label">Stock Count</label>
+        <input
+          type="number"
+          id="productLeftCount"
+          name="productLeftCount"
+          class="form-input"
+          value="<%= product ? product.productLeftCount : '' %>"
+          min="0"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="productImages" class="form-label">
+        Images <% if (product) { %>(leave empty to keep current images)<% } %>
+      </label>
+      <input
+        type="file"
+        id="productImages"
+        name="productImages"
+        class="form-input"
+        multiple
+        accept="image/*"
+        <%= product ? '' : 'required' %>
+      />
+    </div>
+
+    <% if (product && product.productImages && product.productImages.length > 0) { %>
+      <div class="product-form__current-images">
+        <% product.productImages.forEach(function(img) { %>
+          <img src="<%= img %>" alt="<%= product.productName %>" class="table-thumb" />
+        <% }); %>
+      </div>
+    <% } %>
+
+    <button type="submit" class="btn btn-primary">
+      <%= product ? 'Update Product' : 'Create Product' %>
+    </button>
+  </form>
+</div>

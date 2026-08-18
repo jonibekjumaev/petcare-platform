@@ -1,0 +1,25 @@
+<!-- views/dashboard.ejs -->
+<div class="page-header">
+  <h1 class="page-title">Dashboard</h1>
+</div>
+
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="form-error"><%= error %></div>
+<% } %>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-card__label">Total Members</div>
+    <div class="stat-card__value"><%= memberCount %></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card__label">Total Products</div>
+    <div class="stat-card__value"><%= productCount %></div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card__label">Total Orders</div>
+    <div class="stat-card__value"><%= orderCount %></div>
+  </div>
+</div>

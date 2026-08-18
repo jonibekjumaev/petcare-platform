@@ -1,0 +1,84 @@
+<!-- views/members.ejs -->
+<%
+  const statusBadgeClass = {
+    ACTIVE: 'badge-success',
+    BLOCK: 'badge-warning',
+    DELETE: 'badge-danger',
+  };
+%>
+
+<div class="page-header">
+  <h1 class="page-title">Members</h1>
+</div>
+
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="form-error"><%= error %></div>
+<% } %>
+
+<form action="/admin/member/all" method="GET" class="filter-bar">
+  <select name="memberStatus" class="form-select">
+    <option value="">All Statuses</option>
+    <option value="ACTIVE" <%= inquiry.memberStatus === 'ACTIVE' ? 'selected' : '' %>>Active</option>
+    <option value="BLOCK" <%= inquiry.memberStatus === 'BLOCK' ? 'selected' : '' %>>Blocked</option>
+    <option value="DELETE" <%= inquiry.memberStatus === 'DELETE' ? 'selected' : '' %>>Deleted</option>
+  </select>
+  <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+<% if (members.length === 0) { %>
+  <div class="empty-state">No members found.</div>
+<% } else { %>
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nickname</th>
+          <th>Phone</th>
+          <th>Type</th>
+          <th>Points</th>
+          <th>Status</th>
+          <th>Joined</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% members.forEach(function(member) { %>
+          <tr>
+            <td>
+              <div class="member-avatar"><%= member.memberNick.charAt(0).toUpperCase() %></div>
+            </td>
+            <td><%= member.memberNick %></td>
+            <td><%= member.memberPhone %></td>
+            <td><%= member.memberType %></td>
+            <td><%= member.memberPoints %></td>
+            <td>
+              <span class="badge <%= statusBadgeClass[member.memberStatus] %>"><%= member.memberStatus %></span>
+            </td>
+            <td><%= new Date(member.createdAt).toLocaleDateString() %></td>
+            <td>
+              <form action="/admin/member/<%= member._id %>" method="POST" class="status-form">
+                <select name="memberStatus" class="form-select form-select--sm">
+                  <option value="ACTIVE" <%= member.memberStatus === 'ACTIVE' ? 'selected' : '' %>>Active</option>
+                  <option value="BLOCK" <%= member.memberStatus === 'BLOCK' ? 'selected' : '' %>>Block</option>
+                  <option value="DELETE" <%= member.memberStatus === 'DELETE' ? 'selected' : '' %>>Delete</option>
+                </select>
+                <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <% if (inquiry.page > 1) { %>
+      <a href="/admin/member/all?page=<%= inquiry.page - 1 %>&limit=<%= inquiry.limit %>" class="btn btn-secondary btn-sm">Previous</a>
+    <% } %>
+    <span class="pagination__current">Page <%= inquiry.page %></span>
+    <% if (members.length === inquiry.limit) { %>
+      <a href="/admin/member/all?page=<%= inquiry.page + 1 %>&limit=<%= inquiry.limit %>" class="btn btn-secondary btn-sm">Next</a>
+    <% } %>
+  </div>
+<% } %>

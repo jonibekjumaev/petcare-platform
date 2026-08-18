@@ -1,0 +1,93 @@
+<!-- views/products.ejs -->
+<div class="page-header">
+  <h1 class="page-title">Products</h1>
+  <a href="/admin/product/create" class="btn btn-primary">+ Add Product</a>
+</div>
+
+<% if (typeof error !== "undefined" && error) { %>
+  <div class="form-error"><%= error %></div>
+<% } %>
+
+<form action="/admin/product/all" method="GET" class="filter-bar">
+  <input
+    type="text"
+    name="search"
+    class="form-input"
+    placeholder="Search by name..."
+    value="<%= inquiry.search || '' %>"
+  />
+
+  <select name="productCategory" class="form-select">
+    <option value="">All Categories</option>
+    <option value="FOOD" <%= inquiry.productCategory === 'FOOD' ? 'selected' : '' %>>Food</option>
+    <option value="TOY" <%= inquiry.productCategory === 'TOY' ? 'selected' : '' %>>Toy</option>
+    <option value="ACCESSORY" <%= inquiry.productCategory === 'ACCESSORY' ? 'selected' : '' %>>Accessory</option>
+    <option value="SUPPLEMENT" <%= inquiry.productCategory === 'SUPPLEMENT' ? 'selected' : '' %>>Supplement</option>
+    <option value="HYGIENE" <%= inquiry.productCategory === 'HYGIENE' ? 'selected' : '' %>>Hygiene</option>
+  </select>
+
+  <select name="productPetType" class="form-select">
+    <option value="">All Pets</option>
+    <option value="DOG" <%= inquiry.productPetType === 'DOG' ? 'selected' : '' %>>Dog</option>
+    <option value="CAT" <%= inquiry.productPetType === 'CAT' ? 'selected' : '' %>>Cat</option>
+    <option value="FISH" <%= inquiry.productPetType === 'FISH' ? 'selected' : '' %>>Fish</option>
+    <option value="ALL" <%= inquiry.productPetType === 'ALL' ? 'selected' : '' %>>All Pets</option>
+  </select>
+
+  <select name="order" class="form-select">
+    <option value="createdAt" <%= inquiry.order === 'createdAt' ? 'selected' : '' %>>Newest</option>
+    <option value="productPrice" <%= inquiry.order === 'productPrice' ? 'selected' : '' %>>Price</option>
+    <option value="productViews" <%= inquiry.order === 'productViews' ? 'selected' : '' %>>Most Viewed</option>
+  </select>
+
+  <button type="submit" class="btn btn-secondary">Filter</button>
+</form>
+
+<% if (products.length === 0) { %>
+  <div class="empty-state">No products found.</div>
+<% } else { %>
+  <div class="table-wrapper">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Pet Type</th>
+          <th>Price</th>
+          <th>Left</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(function(product) { %>
+          <tr>
+            <td>
+              <% if (product.productImages && product.productImages.length > 0) { %>
+                <img src="<%= product.productImages[0] %>" alt="<%= product.productName %>" class="table-thumb" />
+              <% } %>
+            </td>
+            <td><%= product.productName %></td>
+            <td><%= product.productCategory %></td>
+            <td><%= product.productPetType %></td>
+            <td>$<%= product.productPrice %></td>
+            <td><%= product.productLeftCount %></td>
+            <td>
+              <a href="/admin/product/<%= product._id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <% if (inquiry.page > 1) { %>
+      <a href="/admin/product/all?page=<%= inquiry.page - 1 %>&limit=<%= inquiry.limit %>" class="btn btn-secondary btn-sm">Previous</a>
+    <% } %>
+    <span class="pagination__current">Page <%= inquiry.page %></span>
+    <% if (products.length === inquiry.limit) { %>
+      <a href="/admin/product/all?page=<%= inquiry.page + 1 %>&limit=<%= inquiry.limit %>" class="btn btn-secondary btn-sm">Next</a>
+    <% } %>
+  </div>
+<% } %>

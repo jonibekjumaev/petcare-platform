@@ -1,0 +1,23 @@
+<!-- views/includes/sidebar.ejs -->
+<aside class="sidebar">
+  <div class="sidebar__brand">PetCare Admin</div>
+
+  <nav class="sidebar__nav">
+    <a href="/admin/dashboard" class="sidebar__link <%= page === 'dashboard' ? 'is-active' : '' %>">
+      Dashboard
+    </a>
+    <a href="/admin/product/all" class="sidebar__link <%= page === 'products' ? 'is-active' : '' %>">
+      Products
+    </a>
+    <a href="/admin/order/all" class="sidebar__link <%= page === 'orders' ? 'is-active' : '' %>">
+      Orders
+    </a>
+    <a href="/admin/member/all" class="sidebar__link <%= page === 'members' ? 'is-active' : '' %>">
+      Members
+    </a>
+  </nav>
+
+  <div class="sidebar__footer">
+    <a href="/admin/logout" class="sidebar__link">Logout</a>
+  </div>
+</aside>

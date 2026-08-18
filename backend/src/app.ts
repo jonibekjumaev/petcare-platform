@@ -6,6 +6,7 @@ import router from "./router";
 import session from "express-session";
 import ConnectMongoDB from "connect-mongodb-session";
 import routerAdmin from "./router-admin";
+import expressLayouts from "express-ejs-layouts";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use(
 //EJS
 app.set("views", path.join(__dirname, "..", "views"));
 app.set("view engine", "ejs");
+app.use(expressLayouts);
 
 //Router
 app.use(routerAdmin);

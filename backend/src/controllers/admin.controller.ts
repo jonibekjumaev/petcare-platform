@@ -10,7 +10,6 @@ import {
 import MemberService from "../models/Member.service";
 import ProductService from "../models/Product.service";
 import OrderService from "../models/Order.service";
-import { error } from "node:console";
 import {
   ProductInput,
   ProductInquiry,
@@ -47,7 +46,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const message =
       err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
 
-    res.render("login", { error: message });
+    res.render("login", { error: message, layout: false });
   }
 };
 
@@ -69,12 +68,12 @@ export const getLoginPage = async (
     if (req.session.admin) {
       res.redirect("/admin/dashboard");
     } else {
-      res.render("login", { error: null });
+      res.render("login", { error: null, layout: false });
     }
   } catch (err) {
     console.error("Error: getLoginPage", err);
     const { code, message } = err instanceof Errors ? err : Errors.standard;
-    res.status(code).render("login", { error: message });
+    res.status(code).render("login", { error: message, layout: false });
   }
 };
 
@@ -89,7 +88,13 @@ export const getDashboardPage = async (
       orderService.countOrders(),
     ]);
 
-    res.render("dashboard", { memberCount, productCount, orderCount });
+    res.render("dashboard", {
+      memberCount,
+      productCount,
+      orderCount,
+      error: null,
+      page: "dashboard",
+    });
   } catch (err) {
     console.error("Error: getDashboardPage", err);
     const { code, message } = err instanceof Errors ? err : Errors.standard;
@@ -98,6 +103,7 @@ export const getDashboardPage = async (
       productCount: 0,
       orderCount: 0,
       error: message,
+      page: "dashboard",
     });
   }
 };
@@ -117,13 +123,14 @@ export const getProductsPage = async (
 
   try {
     const result = await productService.getAllProducts(inquiry);
-    res.render("products", { products: result, inquiry });
+    res.render("products", { products: result, inquiry, page: "products" });
   } catch (err) {
     console.error("Error: getProductsPage", err);
     res.status(HttpCode.INTERNAL_SERVER_ERROR).render("products", {
       products: [],
       inquiry,
       error: "Failed to load products",
+      page: "products",
     });
   }
 };
@@ -132,7 +139,7 @@ export const getCreateProductPage = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  res.render("product-form", { product: null, error: null });
+  res.render("product-form", { product: null, error: null, page: "products" });
 };
 
 export const createProduct = async (
@@ -170,6 +177,7 @@ export const createProduct = async (
     res.status(code).render("product-form", {
       product: req.body,
       error: message,
+      page: "products",
     });
   }
 };
@@ -183,13 +191,18 @@ export const getEditProductPage = async (
 
     const result = await productService.getProductForEdit(productId as string);
 
-    res.render("product-form", { product: result, error: null });
+    res.render("product-form", {
+      product: result,
+      error: null,
+      page: "products",
+    });
   } catch (err) {
     console.error("Error: getEditProductPage", err);
     const { code, message } = err instanceof Errors ? err : Errors.standard;
     res.status(code).render("product-form", {
       product: null,
       error: message,
+      page: "products",
     });
   }
 };
@@ -221,6 +234,7 @@ export const updateProduct = async (
     res.status(code).render("product-form", {
       product: input,
       error: message,
+      page: "products",
     });
   }
 };
@@ -237,7 +251,7 @@ export const getOrdersPage = async (
 
   try {
     const orders = await orderService.getAllOrdersForAdmin(inquiry);
-    res.render("orders", { orders, inquiry, error: null });
+    res.render("orders", { orders, inquiry, error: null, page: "orders" });
   } catch (err) {
     console.error("Error: getOrdersPage", err);
     const { code, message } = err instanceof Errors ? err : Errors.standard;
@@ -245,6 +259,7 @@ export const getOrdersPage = async (
       orders: [],
       inquiry,
       error: message,
+      page: "orders",
     });
   }
 };
@@ -278,7 +293,7 @@ export const getMembersPage = async (
 
   try {
     const members = await memberService.getAllMembersForAdmin(inquiry);
-    res.render("members", { members, inquiry, error: null });
+    res.render("members", { members, inquiry, error: null, page: "members" });
   } catch (err) {
     console.error("Error: getMembersPage", err);
     const { code, message } = err instanceof Errors ? err : Errors.standard;
@@ -286,6 +301,7 @@ export const getMembersPage = async (
       members: [],
       inquiry,
       error: message,
+      page: "members",
     });
   }
 };

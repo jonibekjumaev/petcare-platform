@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { MemberStatus, MemberType } from "../libs/enums/member.enum";
 import {
-  ExtendedRequest,
   LoginInput,
   MemberInquiry,
   MemberUpdateInput,
@@ -143,7 +142,7 @@ export const getCreateProductPage = async (
 };
 
 export const createProduct = async (
-  req: ExtendedRequest,
+  req: Request,
   res: Response,
 ): Promise<void> => {
   try {
@@ -183,13 +182,13 @@ export const createProduct = async (
 };
 
 export const getEditProductPage = async (
-  req: Request,
+  req: Request<{ id: string }>,
   res: Response,
 ): Promise<void> => {
   try {
     const productId = req.params.id;
 
-    const result = await productService.getProductForEdit(productId as string);
+    const result = await productService.getProductForEdit(productId);
 
     res.render("product-form", {
       product: result,
@@ -208,11 +207,11 @@ export const getEditProductPage = async (
 };
 
 export const updateProduct = async (
-  req: ExtendedRequest,
+  req: Request<{ id: string }>,
   res: Response,
 ): Promise<void> => {
   const input: ProductUpdateInput = { ...req.body };
-  input._id = req.params.id as string;
+  input._id = req.params.id;
   try {
     if (input.productPrice) input.productPrice = Number(input.productPrice);
     if (input.productLeftCount)
@@ -265,11 +264,11 @@ export const getOrdersPage = async (
 };
 
 export const updateOrderStatus = async (
-  req: Request,
+  req: Request<{ id: string }>,
   res: Response,
 ): Promise<void> => {
   try {
-    const orderId = req.params.id as string;
+    const orderId = req.params.id;
     const newStatus = req.body.orderStatus as OrderStatus;
 
     await orderService.updateOrderStatusForAdmin(orderId, newStatus);
@@ -307,12 +306,12 @@ export const getMembersPage = async (
 };
 
 export const updateMemberStatus = async (
-  req: Request,
+  req: Request<{ id: string }>,
   res: Response,
 ): Promise<void> => {
   try {
     const input: MemberUpdateInput = {
-      _id: req.params.id as string,
+      _id: req.params.id,
       memberStatus: req.body.memberStatus,
     };
     await memberService.updateMember(input);

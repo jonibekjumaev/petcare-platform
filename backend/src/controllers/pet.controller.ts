@@ -28,7 +28,7 @@ export const createPet = async (
 };
 
 export const getPet = async (
-  req: ExtendedRequest,
+  req: ExtendedRequest<{ id: string }>,
   res: Response,
 ): Promise<void> => {
   try {
@@ -38,7 +38,7 @@ export const getPet = async (
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
 
     const { id } = req.params;
-    const result = await petService.getPet(memberId, id as string);
+    const result = await petService.getPet(memberId, id);
 
     res.status(HttpCode.OK).json(result);
   } catch (err) {

@@ -59,7 +59,7 @@ export const getAllOrders = async (
 };
 
 export const getOrder = async (
-  req: ExtendedRequest,
+  req: ExtendedRequest<{ id: string }>,
   res: Response,
 ): Promise<void> => {
   try {
@@ -68,7 +68,7 @@ export const getOrder = async (
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
     }
 
-    const orderId = req.params.id as string;
+    const orderId = req.params.id;
     const result = await orderService.getOrder(memberId, orderId);
 
     res.status(HttpCode.OK).json(result);

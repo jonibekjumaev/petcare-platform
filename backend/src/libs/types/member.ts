@@ -49,7 +49,7 @@ export interface TokenPayload {
   memberNick: string;
   memberType: MemberType;
 }
-export interface ExtendedRequest extends Request {
+export interface ExtendedRequest<P = Request["params"]> extends Request<P> {
   member?: TokenPayload;
 }
 

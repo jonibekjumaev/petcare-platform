@@ -48,7 +48,7 @@ export const getAllSessions = async (
 };
 
 export const getSessionMessages = async (
-  req: ExtendedRequest,
+  req: ExtendedRequest<{ id: string }>,
   res: Response,
 ): Promise<void> => {
   try {
@@ -57,7 +57,7 @@ export const getSessionMessages = async (
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
     }
 
-    const sessionId = req.params.id as string;
+    const sessionId = req.params.id;
     const result = await chatService.getSessionMessages(memberId, sessionId);
 
     res.status(HttpCode.OK).json(result);

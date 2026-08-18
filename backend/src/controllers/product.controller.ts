@@ -53,11 +53,11 @@ export const createProduct = async (
 };
 
 export const getProduct = async (
-  req: Request,
+  req: Request<{ id: string }>,
   res: Response,
 ): Promise<void> => {
   try {
-    const productId = req.params.id as string;
+    const productId = req.params.id;
     const result = await productService.getProduct(productId);
 
     res.status(HttpCode.OK).json(result);

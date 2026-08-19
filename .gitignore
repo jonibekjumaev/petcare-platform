@@ -2,3 +2,5 @@ node_modules
 dist
 .env
 uploads
+node_modules/
+shared/dist/

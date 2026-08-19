@@ -1,0 +1,15 @@
+{
+  "name": "petcare",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "build:shared": "npm run build -w @petcare/shared",
+    "dev:shared": "npm run dev -w @petcare/shared",
+    "dev:backend": "npm run start:dev -w @petcare/backend"
+  }
+}

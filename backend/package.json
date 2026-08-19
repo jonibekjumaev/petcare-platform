@@ -1,5 +1,5 @@
 {
-  "name": "PetCare",
+  "name": "@petcare/backend",
   "version": "1.0.0",
   "description": "",
   "main": "src/server.ts",
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1",
+    "@petcare/shared": "*",
     "bcryptjs": "^3.0.3",
     "connect-mongodb-session": "^5.0.0",
     "dotenv": "^17.4.2",

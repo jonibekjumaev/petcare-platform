@@ -14,7 +14,6 @@ const authService = new AuthService();
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log("signup");
     const input: MemberInput = req.body;
     const member = await memberService.signup(input);
     const accessToken = authService.createToken(member);
@@ -29,7 +28,6 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log("login");
     const input: LoginInput = req.body;
     const member = await memberService.login(input);
     const accessToken = authService.createToken(member);
@@ -44,8 +42,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 export const memberDetail = async (req: ExtendedRequest, res: Response) => {
   try {
-    console.log("memberDetail");
-
     const member = await memberService.memberDetail(req.member?._id);
 
     res.status(HttpCode.OK).json(member);
@@ -61,7 +57,6 @@ export const updateMember = async (
   res: Response,
 ): Promise<void> => {
   try {
-    console.log("updateMember");
     const input: MemberUpdateInput = req.body;
     input._id = req.member!._id;
     const result = await memberService.updateMember(input);

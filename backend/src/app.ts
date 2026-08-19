@@ -7,6 +7,7 @@ import session from "express-session";
 import ConnectMongoDB from "connect-mongodb-session";
 import routerAdmin from "./router-admin";
 import expressLayouts from "express-ejs-layouts";
+import morgan from "morgan";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use(morgan("dev"));
 
 //Session
 app.use(

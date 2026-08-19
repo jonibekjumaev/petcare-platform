@@ -11,7 +11,6 @@ export const createPet = async (
   res: Response,
 ): Promise<void> => {
   try {
-    console.log("createPet");
     const memberId = req.member?._id;
     if (!memberId)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
@@ -32,7 +31,6 @@ export const getPet = async (
   res: Response,
 ): Promise<void> => {
   try {
-    console.log("getPet");
     const memberId = req.member?._id;
     if (!memberId)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
@@ -53,7 +51,6 @@ export const getAllPets = async (
   res: Response,
 ): Promise<void> => {
   try {
-    console.log("getAllPets");
     const memberId = req.member?._id;
     if (!memberId)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
@@ -73,7 +70,6 @@ export const updatePet = async (
   res: Response,
 ): Promise<void> => {
   try {
-    console.log("updatePet");
     const memberId = req.member?._id;
     if (!memberId)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
@@ -95,7 +91,6 @@ export const deletePet = async (
   res: Response,
 ): Promise<void> => {
   try {
-    console.log("deletePet");
     const memberId = req.member?._id;
     if (!memberId)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);

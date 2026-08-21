@@ -1,9 +1,9 @@
 // Enums
-export * from "./enums/product.enum";
-export * from "./enums/member.enum";
-export * from "./enums/order.enum";
+export * from "./enums/product.enum.js";
+export * from "./enums/member.enum.js";
+export * from "./enums/order.enum.js";
 
 // DTOs
-export * from "./dto/product.dto";
-export * from "./dto/member.dto";
-export * from "./dto/order.dto";
+export * from "./dto/product.dto.js";
+export * from "./dto/member.dto.js";
+export * from "./dto/order.dto.js";

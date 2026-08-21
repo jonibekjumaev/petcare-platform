@@ -3,7 +3,7 @@ import {
   ProductPetType,
   ProductSize,
   ProductStatus,
-} from "../enums/product.enum";
+} from "../enums/product.enum.js";
 
 /** API javobida qaytadigan mahsulot shakli. */
 export interface ProductDTO {

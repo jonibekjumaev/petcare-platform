@@ -1,5 +1,5 @@
-import { OrderStatus } from "../enums/order.enum";
-import { ProductDTO } from "./product.dto";
+import { OrderStatus } from "../enums/order.enum.js";
+import { ProductDTO } from "./product.dto.js";
 
 export interface OrderDTO {
   _id: string;

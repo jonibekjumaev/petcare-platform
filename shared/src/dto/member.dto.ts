@@ -1,4 +1,4 @@
-import { MemberStatus, MemberType } from "../enums/member.enum";
+import { MemberStatus, MemberType } from "../enums/member.enum.js";
 
 /**
  * API javobida qaytadigan a'zo shakli.

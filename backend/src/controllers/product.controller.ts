@@ -3,6 +3,7 @@ import Errors, { HttpCode, Message } from "../libs/Errors";
 import { ExtendedRequest } from "../libs/types/member";
 import { Response, Request } from "express";
 import ProductService from "../models/Product.service";
+import { toProductDTO } from "../libs/mappers/product.mapper";
 import {
   ProductInput,
   ProductInquiry,
@@ -60,7 +61,7 @@ export const getProduct = async (
     const productId = req.params.id;
     const result = await productService.getProduct(productId);
 
-    res.status(HttpCode.OK).json(result);
+    res.status(HttpCode.OK).json(toProductDTO(result));
   } catch (err) {
     console.error("Error: getProduct", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -84,7 +85,9 @@ export const getAllProducts = async (
 
     const result = await productService.getAllProducts(inquiry);
 
-    res.status(HttpCode.OK).json(result);
+    res
+      .status(HttpCode.OK)
+      .json(result.map((product) => toProductDTO(product)));
   } catch (err) {
     console.error("Error: getAllProducts", err);
     if (err instanceof Errors) res.status(err.code).json(err);

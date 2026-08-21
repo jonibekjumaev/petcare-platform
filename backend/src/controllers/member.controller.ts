@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import AuthService from "../libs/AuthService";
 import Errors, { HttpCode } from "../libs/Errors";
 import MemberService from "../models/Member.service";
+import { toMemberDTO } from "../libs/mappers/member.mapper";
 import {
   ExtendedRequest,
   LoginInput,
@@ -18,7 +19,9 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const member = await memberService.signup(input);
     const accessToken = authService.createToken(member);
 
-    res.status(HttpCode.CREATED).json({ member, accessToken });
+    res
+      .status(HttpCode.CREATED)
+      .json({ member: toMemberDTO(member), accessToken });
   } catch (err) {
     console.log("Error: signup", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -32,7 +35,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const member = await memberService.login(input);
     const accessToken = authService.createToken(member);
 
-    res.status(HttpCode.OK).json({ member, accessToken });
+    res.status(HttpCode.OK).json({ member: toMemberDTO(member), accessToken });
   } catch (err) {
     console.log("Error: login", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -44,7 +47,7 @@ export const memberDetail = async (req: ExtendedRequest, res: Response) => {
   try {
     const member = await memberService.memberDetail(req.member?._id);
 
-    res.status(HttpCode.OK).json(member);
+    res.status(HttpCode.OK).json(toMemberDTO(member));
   } catch (err) {
     console.log("Error: memberDetail:", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -61,7 +64,7 @@ export const updateMember = async (
     input._id = req.member!._id;
     const result = await memberService.updateMember(input);
 
-    res.status(HttpCode.OK).json(result);
+    res.status(HttpCode.OK).json(toMemberDTO(result));
   } catch (err) {
     console.log("Error: updateMember", err);
     if (err instanceof Errors) res.status(err.code).json(err);

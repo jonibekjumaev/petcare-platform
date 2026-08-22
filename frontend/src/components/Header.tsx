@@ -3,7 +3,10 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../app/store";
 import { logout } from "../features/auth/authSlice";
@@ -11,6 +14,8 @@ import { logout } from "../features/auth/authSlice";
 export default function Header() {
   const dispatch = useDispatch();
   const member = useSelector((state: RootState) => state.auth.member);
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -27,6 +32,12 @@ export default function Header() {
         >
           PetCare
         </Typography>
+
+        <IconButton color="inherit" component={RouterLink} to="/cart">
+          <Badge badgeContent={cartCount} color="secondary">
+            <ShoppingCartIcon />
+          </Badge>
+        </IconButton>
 
         {member ? (
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>

@@ -7,7 +7,11 @@ export const productApi = api.injectEndpoints({
       query: () => "/product/all",
       providesTags: ["Product"],
     }),
+    getProduct: builder.query<ProductDTO, string>({
+      query: (id) => `/product/${id}`,
+      providesTags: ["Product"],
+    }),
   }),
 });
 
-export const { useGetAllProductsQuery } = productApi;
+export const { useGetAllProductsQuery, useGetProductQuery } = productApi;

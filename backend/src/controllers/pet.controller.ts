@@ -3,6 +3,7 @@ import Errors, { HttpCode, Message } from "../libs/Errors";
 import { ExtendedRequest } from "../libs/types/member";
 import { Pet, PetInput, PetUpdateInput } from "../libs/types/pet";
 import PetService from "../models/Pet.service";
+import { toPetDTO } from "../libs/mappers/pet.mapper";
 
 const petService = new PetService();
 
@@ -18,7 +19,7 @@ export const createPet = async (
     const input: PetInput = req.body;
     const result = await petService.createPet(memberId, input);
 
-    res.status(HttpCode.CREATED).json(result);
+    res.status(HttpCode.CREATED).json(toPetDTO(result));
   } catch (err) {
     console.log("Error: createPet", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -38,7 +39,7 @@ export const getPet = async (
     const { id } = req.params;
     const result = await petService.getPet(memberId, id);
 
-    res.status(HttpCode.OK).json(result);
+    res.status(HttpCode.OK).json(toPetDTO(result));
   } catch (err) {
     console.log("Error: getPet", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -57,7 +58,7 @@ export const getAllPets = async (
 
     const result = await petService.getAllPets(memberId);
 
-    res.status(HttpCode.OK).json(result);
+    res.status(HttpCode.OK).json(result.map((pet) => toPetDTO(pet)));
   } catch (err) {
     console.log("Error: getAllPets", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -78,7 +79,7 @@ export const updatePet = async (
 
     const result = await petService.updatePet(memberId, input);
 
-    res.status(HttpCode.OK).json(result);
+    res.status(HttpCode.OK).json(toPetDTO(result));
   } catch (err) {
     console.log("Error: updatePet", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -99,7 +100,7 @@ export const deletePet = async (
 
     const result = await petService.deletePet(memberId, petId);
 
-    res.status(HttpCode.OK).json(result);
+    res.status(HttpCode.OK).json(toPetDTO(result));
   } catch (err) {
     console.log("Error: deletePet", err);
     if (err instanceof Errors) res.status(err.code).json(err);

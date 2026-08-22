@@ -14,6 +14,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/connect-mongodb-session": "^2.4.8",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/express-ejs-layouts": "^2.5.4",
     "@types/express-session": "^1.19.0",
@@ -30,6 +31,7 @@
     "@petcare/shared": "*",
     "bcryptjs": "^3.0.3",
     "connect-mongodb-session": "^5.0.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",

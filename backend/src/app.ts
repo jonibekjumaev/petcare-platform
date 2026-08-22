@@ -1,5 +1,5 @@
 import express from "express";
-import { MONGO_URL, SESSION_SECRET } from "./libs/config";
+import { MONGO_URL, SESSION_SECRET, FRONTEND_URL } from "./libs/config";
 import path from "path";
 import { errorHandler } from "./middlewares/error.middleware";
 import router from "./router";
@@ -8,8 +8,16 @@ import ConnectMongoDB from "connect-mongodb-session";
 import routerAdmin from "./router-admin";
 import expressLayouts from "express-ejs-layouts";
 import morgan from "morgan";
+import cors from "cors";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173", FRONTEND_URL],
+    credentials: true,
+  }),
+);
 
 const MongoDBStore = ConnectMongoDB(session);
 const store = new MongoDBStore({

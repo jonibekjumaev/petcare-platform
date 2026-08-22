@@ -23,3 +23,13 @@ export const shapeIntoMongooseObjectId = (
     ? new mongoose.Types.ObjectId(target)
     : target;
 };
+
+// FRONTEND URL:
+function optionalEnv(key: string, fallback: string): string {
+  return process.env[key] ?? fallback;
+}
+
+export const FRONTEND_URL = optionalEnv(
+  "FRONTEND_URL",
+  "http://localhost:5173",
+);

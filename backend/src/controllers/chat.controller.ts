@@ -3,6 +3,10 @@ import Errors, { HttpCode, Message } from "../libs/Errors";
 import { ExtendedRequest } from "../libs/types/member";
 import { ChatSessionInput, ChatMessageInput } from "../libs/types/chat";
 import ChatService from "../models/Chat.service";
+import {
+  toChatMessageDTO,
+  toChatSessionDTO,
+} from "../libs/mappers/chat.mapper";
 
 const chatService = new ChatService();
 
@@ -19,7 +23,7 @@ export const createSession = async (
     const input: ChatSessionInput = req.body;
     const result = await chatService.createSession(memberId, input.petId);
 
-    res.status(HttpCode.CREATED).json(result);
+    res.status(HttpCode.CREATED).json(toChatSessionDTO(result));
   } catch (err) {
     console.error("Error: createSession", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -39,7 +43,7 @@ export const getAllSessions = async (
 
     const result = await chatService.getAllSessions(memberId);
 
-    res.status(HttpCode.OK).json(result);
+    res.status(HttpCode.OK).json(result.map((data) => toChatSessionDTO(data)));
   } catch (err) {
     console.error("Error: getAllSessions", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -60,7 +64,7 @@ export const getSessionMessages = async (
     const sessionId = req.params.id;
     const result = await chatService.getSessionMessages(memberId, sessionId);
 
-    res.status(HttpCode.OK).json(result);
+    res.status(HttpCode.OK).json(result.map((data) => toChatMessageDTO(data)));
   } catch (err) {
     console.error("Error: getSessionMessages", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -85,7 +89,7 @@ export const sendMessage = async (
       input.messageContent,
     );
 
-    res.status(HttpCode.CREATED).json(result);
+    res.status(HttpCode.CREATED).json(toChatMessageDTO(result));
   } catch (err) {
     console.error("Error: sendMessage", err);
     if (err instanceof Errors) res.status(err.code).json(err);

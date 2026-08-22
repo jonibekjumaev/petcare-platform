@@ -6,7 +6,9 @@ import ProductDetailPage from "../pages/ProductDetailPage";
 import CartPage from "../pages/CartPage";
 import CheckoutPage from "../pages/CheckoutPage";
 import AddPetPage from "../pages/AddPetPage";
+import PetsPage from "../pages/PetsPage";
 import OrderHistoryPage from "../pages/OrderHistoryPage";
+import ProfilePage from "../pages/ProfilePage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
 
@@ -27,6 +29,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "pets",
+        element: (
+          <ProtectedRoute>
+            <PetsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "pets/new",
         element: (
           <ProtectedRoute>
@@ -39,6 +49,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <OrderHistoryPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         ),
       },

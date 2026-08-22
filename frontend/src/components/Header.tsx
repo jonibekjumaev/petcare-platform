@@ -41,6 +41,9 @@ export default function Header() {
 
         {member ? (
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Button color="inherit" component={RouterLink} to="/chat">
+              AI Advisor
+            </Button>
             <Button color="inherit" component={RouterLink} to="/pets">
               My Pets
             </Button>

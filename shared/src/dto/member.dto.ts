@@ -2,7 +2,6 @@ import { MemberStatus, MemberType } from "../enums/member.enum.js";
 
 /**
  * API javobida qaytadigan a'zo shakli.
- * DIQQAT: memberPassword bu yerda YO'Q va hech qachon bo'lmasligi kerak.
  */
 export interface MemberDTO {
   _id: string;

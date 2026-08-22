@@ -1,5 +1,5 @@
 import { api } from "../../app/api";
-import type { PetDTO } from "@petcare/shared";
+import type { PetDTO, PetCreateRequestDTO } from "@petcare/shared";
 
 export const petApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -7,7 +7,15 @@ export const petApi = api.injectEndpoints({
       query: () => "/pet/all",
       providesTags: ["Pet"],
     }),
+    createPet: builder.mutation<PetDTO, PetCreateRequestDTO>({
+      query: (input) => ({
+        url: "/pet/create",
+        method: "POST",
+        body: input,
+      }),
+      invalidatesTags: ["Pet"],
+    }),
   }),
 });
 
-export const { useGetAllPetsQuery } = petApi;
+export const { useGetAllPetsQuery, useCreatePetMutation } = petApi;

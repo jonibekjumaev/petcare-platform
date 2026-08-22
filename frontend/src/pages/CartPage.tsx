@@ -141,16 +141,14 @@ export default function CartPage() {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               Shipping and taxes calculated at checkout.
             </Typography>
-            <Button variant="contained" fullWidth disabled>
+            <Button
+              variant="contained"
+              fullWidth
+              component={RouterLink}
+              to="/checkout"
+            >
               Proceed to Checkout
             </Button>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: "block", mt: 1, textAlign: "center" }}
-            >
-              Checkout page — coming in the next step
-            </Typography>
           </Paper>
         </Grid>
       </Grid>

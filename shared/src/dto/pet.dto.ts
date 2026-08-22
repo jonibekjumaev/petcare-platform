@@ -16,3 +16,14 @@ export interface PetDTO {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface PetCreateRequestDTO {
+  petType: PetType;
+  petGender: PetGender;
+  petName: string;
+  petBreed?: string;
+  petAgeMonths?: number;
+  petWeight?: number;
+  petImage?: string;
+  petNotes?: string;
+}

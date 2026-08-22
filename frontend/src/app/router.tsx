@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import Layout from "../components/Layout";
 import ProtectedRoute from "../components/ProtectedRoute";
+import HomePage from "../pages/HomePage";
 import ProductsPage from "../pages/ProductsPage";
 import ProductDetailPage from "../pages/ProductDetailPage";
 import CartPage from "../pages/CartPage";
@@ -9,16 +10,17 @@ import AddPetPage from "../pages/AddPetPage";
 import PetsPage from "../pages/PetsPage";
 import OrderHistoryPage from "../pages/OrderHistoryPage";
 import ProfilePage from "../pages/ProfilePage";
+import ChatPage from "../pages/ChatPage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
-import ChatPage from "../pages/ChatPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      { index: true, element: <ProductsPage /> },
+      { index: true, element: <HomePage /> },
+      { path: "products", element: <ProductsPage /> },
       { path: "product/:id", element: <ProductDetailPage /> },
       { path: "cart", element: <CartPage /> },
       {

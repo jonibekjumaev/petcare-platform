@@ -32,6 +32,9 @@ export default function Header() {
         >
           PetCare
         </Typography>
+        <Button color="inherit" component={RouterLink} to="/products">
+          Products
+        </Button>
 
         <IconButton color="inherit" component={RouterLink} to="/cart">
           <Badge badgeContent={cartCount} color="secondary">

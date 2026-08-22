@@ -41,6 +41,9 @@ export default function Header() {
 
         {member ? (
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Button color="inherit" component={RouterLink} to="/orders">
+              My Orders
+            </Button>
             <Typography variant="body1">Hi, {member.memberNick}</Typography>
             <Button color="inherit" onClick={handleLogout}>
               Log out

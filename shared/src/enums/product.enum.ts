@@ -24,3 +24,12 @@ export enum ProductSize {
   MEDIUM = "MEDIUM",
   LARGE = "LARGE",
 }
+
+export enum ProductSortOption {
+  NEWEST = "NEWEST",
+  PRICE_LOW_TO_HIGH = "PRICE_LOW_TO_HIGH",
+  PRICE_HIGH_TO_LOW = "PRICE_HIGH_TO_LOW",
+  POPULAR = "POPULAR",
+  MOST_LIKED = "MOST_LIKED",
+  BEST_SELLER = "BEST_SELLER",
+}

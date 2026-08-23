@@ -4,6 +4,7 @@ import {
   ProductPetType,
   ProductSize,
   ProductStatus,
+  ProductSortOption,
 } from "../enums/product.enum";
 
 export interface Product {
@@ -19,6 +20,7 @@ export interface Product {
   productImages: string[];
   productViews: number;
   productLikes: number;
+  productSold: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,7 +53,7 @@ export interface ProductUpdateInput {
 export interface ProductInquiry {
   page: number;
   limit: number;
-  order?: "createdAt" | "productPrice" | "productViews";
+  order?: ProductSortOption;
   productPetType?: ProductPetType;
   productCategory?: ProductCategory;
   search?: string;

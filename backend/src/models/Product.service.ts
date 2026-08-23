@@ -1,3 +1,4 @@
+import { ProductSortOption } from "@petcare/shared";
 import { shapeIntoMongooseObjectId } from "../libs/config";
 import { ProductStatus } from "../libs/enums/product.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
@@ -9,6 +10,15 @@ import {
   ProductUpdateInput,
 } from "../libs/types/product";
 import ProductModel from "../schema/Product.model";
+
+const SORT_MAP: Record<ProductSortOption, Record<string, 1 | -1>> = {
+  [ProductSortOption.NEWEST]: { createdAt: -1 },
+  [ProductSortOption.PRICE_LOW_TO_HIGH]: { productPrice: 1 },
+  [ProductSortOption.PRICE_HIGH_TO_LOW]: { productPrice: -1 },
+  [ProductSortOption.POPULAR]: { productViews: -1 },
+  [ProductSortOption.MOST_LIKED]: { productLikes: -1 },
+  [ProductSortOption.BEST_SELLER]: { productSold: -1 },
+};
 
 class ProductService {
   private readonly productModel;
@@ -53,12 +63,14 @@ class ProductService {
     if (inquiry.search)
       match.productName = { $regex: inquiry.search, $options: "i" };
 
-    const sortField = inquiry.order ?? "createdAt";
+    const sort =
+      SORT_MAP[inquiry.order ?? ProductSortOption.NEWEST] ??
+      SORT_MAP[ProductSortOption.NEWEST];
     const skip = (inquiry.page - 1) * inquiry.limit;
 
     const result = await this.productModel
       .find(match)
-      .sort({ [sortField]: -1 })
+      .sort(sort)
       .skip(skip)
       .limit(inquiry.limit)
       .exec();
@@ -70,7 +82,7 @@ class ProductService {
     const id = shapeIntoMongooseObjectId(input._id);
 
     const result = await this.productModel
-      .findOneAndUpdate({ _id: id }, input, { new: true })
+      .findOneAndUpdate({ _id: id }, { $set: input }, { new: true })
       .exec();
 
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);

@@ -66,6 +66,10 @@ const ProductSchema = new Schema<Product>(
       type: Number,
       default: 0,
     },
+    productSold: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );

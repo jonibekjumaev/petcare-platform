@@ -3,4 +3,5 @@ export {
   ProductPetType,
   ProductStatus,
   ProductSize,
+  ProductSortOption,
 } from "@petcare/shared";

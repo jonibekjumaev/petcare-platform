@@ -2,6 +2,7 @@ import {
   ProductCategory,
   ProductPetType,
   ProductSize,
+  ProductSortOption,
   ProductStatus,
 } from "../enums/product.enum.js";
 
@@ -19,15 +20,15 @@ export interface ProductDTO {
   productImages: string[];
   productViews: number;
   productLikes: number;
+  productSold: number;
   createdAt: string;
   updatedAt: string;
 }
 
-/** GET /product/all uchun so'rov parametrlari. */
 export interface ProductInquiryDTO {
   page: number;
   limit: number;
-  order?: "createdAt" | "productPrice" | "productViews";
+  order?: ProductSortOption;
   productPetType?: ProductPetType;
   productCategory?: ProductCategory;
   search?: string;

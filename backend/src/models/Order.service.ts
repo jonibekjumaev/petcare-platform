@@ -49,7 +49,12 @@ class OrderService {
             productStatus: { $ne: ProductStatus.DELETE },
             productLeftCount: { $gte: item.itemQuantity },
           },
-          { $inc: { productLeftCount: -item.itemQuantity } },
+          {
+            $inc: {
+              productLeftCount: -item.itemQuantity,
+              productSold: item.itemQuantity,
+            },
+          },
           { new: true },
         )
         .exec();
@@ -257,7 +262,10 @@ class OrderService {
         items.map((item) =>
           this.productModel
             .findByIdAndUpdate(item.productId, {
-              $inc: { productLeftCount: item.itemQuantity },
+              $inc: {
+                productLeftCount: item.itemQuantity,
+                productSold: -item.itemQuantity,
+              },
             })
             .exec(),
         ),

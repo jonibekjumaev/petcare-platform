@@ -14,6 +14,7 @@ export const toProductDTO = (product: Product): ProductDTO => ({
   productImages: product.productImages,
   productViews: product.productViews,
   productLikes: product.productLikes,
+  productSold: product.productSold,
   createdAt: product.createdAt.toISOString(),
   updatedAt: product.updatedAt.toISOString(),
 });

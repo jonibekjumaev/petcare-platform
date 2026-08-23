@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { uploadPetImage } from "./libs/utils/multer.config";
+import { uploadMemberImage, uploadPetImage } from "./libs/utils/multer.config";
 
 import {
   signup,
@@ -45,7 +45,12 @@ const router = Router();
 router.post("/member/signup", signup);
 router.post("/member/login", login);
 router.get("/member/detail", verifyAuth, memberDetail);
-router.post("/member/update", verifyAuth, updateMember);
+router.post(
+  "/member/update",
+  verifyAuth,
+  uploadMemberImage.single("memberImage"),
+  updateMember,
+);
 
 /** Pet  */
 

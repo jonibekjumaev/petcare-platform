@@ -3,17 +3,33 @@ import { setCredentials } from "../auth/authSlice";
 import type { MemberDTO, MemberUpdateRequestDTO } from "@petcare/shared";
 import type { RootState } from "../../app/store";
 
+interface UpdateMemberArgs extends Omit<MemberUpdateRequestDTO, "memberImage"> {
+  imageFile?: File;
+}
+
+const buildMemberFormData = (
+  fields: Record<string, unknown>,
+  imageFile?: File,
+): FormData => {
+  const formData = new FormData();
+  Object.entries(fields).forEach(([key, value]) => {
+    if (value !== undefined) formData.append(key, String(value));
+  });
+  if (imageFile) formData.append("memberImage", imageFile);
+  return formData;
+};
+
 export const memberApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMemberDetail: builder.query<MemberDTO, void>({
       query: () => "/member/detail",
       providesTags: ["Member"],
     }),
-    updateMember: builder.mutation<MemberDTO, MemberUpdateRequestDTO>({
-      query: (input) => ({
+    updateMember: builder.mutation<MemberDTO, UpdateMemberArgs>({
+      query: ({ imageFile, ...fields }) => ({
         url: "/member/update",
         method: "POST",
-        body: input,
+        body: buildMemberFormData(fields, imageFile),
       }),
       invalidatesTags: ["Member"],
       onQueryStarted: async (_arg, { dispatch, queryFulfilled, getState }) => {

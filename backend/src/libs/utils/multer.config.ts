@@ -43,3 +43,4 @@ export const createUploader = (subfolder: string, maxCount: number) => {
 
 export const uploadProductImages = createUploader("products", 5);
 export const uploadPetImage = createUploader("pets", 1);
+export const uploadMemberImage = createUploader("members", 1);

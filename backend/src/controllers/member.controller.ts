@@ -60,8 +60,15 @@ export const updateMember = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const input: MemberUpdateInput = req.body;
-    input._id = req.member!._id;
+    const input: MemberUpdateInput = {
+      _id: String(req.member!._id),
+      memberNick: req.body.memberNick,
+      memberPhone: req.body.memberPhone,
+      memberAddress: req.body.memberAddress,
+    };
+
+    if (req.file) input.memberImage = `/uploads/members/${req.file.filename}`;
+
     const result = await memberService.updateMember(input);
 
     res.status(HttpCode.OK).json(toMemberDTO(result));

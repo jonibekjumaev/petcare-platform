@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { uploadPetImage } from "./libs/utils/multer.config";
+
 import {
   signup,
   login,
@@ -6,6 +8,7 @@ import {
   updateMember,
 } from "./controllers/member.controller";
 import { verifyAuth } from "./middlewares/auth.middleware";
+
 import {
   createPet,
   deletePet,
@@ -13,19 +16,21 @@ import {
   getPet,
   updatePet,
 } from "./controllers/pet.controller";
+
 import {
   createProduct,
   getAllProducts,
   getProduct,
   updateProduct,
 } from "./controllers/product.controller";
-import { uploadProductImages } from "./libs/utils/multer.config";
+
 import {
   createOrder,
   getAllOrders,
   getOrder,
   updateOrder,
 } from "./controllers/order.controller";
+
 import {
   createSession,
   getAllSessions,
@@ -44,10 +49,20 @@ router.post("/member/update", verifyAuth, updateMember);
 
 /** Pet  */
 
-router.post("/pet/create", verifyAuth, createPet);
+router.post(
+  "/pet/create",
+  verifyAuth,
+  uploadPetImage.single("petImage"),
+  createPet,
+);
 router.get("/pet/all", verifyAuth, getAllPets);
 router.get("/pet/:id", verifyAuth, getPet);
-router.post("/pet/update", verifyAuth, updatePet);
+router.post(
+  "/pet/update",
+  verifyAuth,
+  uploadPetImage.single("petImage"),
+  updatePet,
+);
 router.post("/pet/delete", verifyAuth, deletePet);
 
 /** Products  */

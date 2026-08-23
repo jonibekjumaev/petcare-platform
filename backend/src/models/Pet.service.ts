@@ -56,7 +56,11 @@ class PetService {
     const idPet = shapeIntoMongooseObjectId(input._id);
 
     const result = await this.petModel
-      .findOneAndUpdate({ memberId: id, _id: idPet }, input, { new: true })
+      .findOneAndUpdate(
+        { memberId: id, _id: idPet },
+        { $set: input },
+        { new: true },
+      )
       .exec();
 
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);

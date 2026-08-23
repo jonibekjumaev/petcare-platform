@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import type { ChangeEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,8 +16,12 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
+import Avatar from "@mui/material/Avatar";
+import PetsIcon from "@mui/icons-material/Pets";
 import { PetType, PetGender } from "@petcare/shared";
 import { useCreatePetMutation } from "../features/pets/petApi";
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB — backenddagi multer limitiga mos
 
 const addPetSchema = z.object({
   petName: z.string().min(1, "Pet name is required"),
@@ -38,6 +44,10 @@ export default function AddPetPage() {
   const navigate = useNavigate();
   const [createPet, { isLoading, error }] = useCreatePetMutation();
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
+
   const {
     register,
     control,
@@ -47,6 +57,27 @@ export default function AddPetPage() {
     resolver: zodResolver(addPetSchema),
     defaultValues: { petType: PetType.DOG, petGender: PetGender.MALE },
   });
+
+  // Yangi tanlangan fayl uchun yaratilgan blob: URL'ni xotiradan tozalash
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      setFileError("Image must be smaller than 5MB");
+      return;
+    }
+
+    setFileError(null);
+    setImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
 
   const onSubmit = async (values: AddPetFormValues) => {
     try {
@@ -60,6 +91,7 @@ export default function AddPetPage() {
           : undefined,
         petWeight: values.petWeight ? Number(values.petWeight) : undefined,
         petNotes: values.petNotes || undefined,
+        imageFile: imageFile ?? undefined,
       }).unwrap();
       navigate("/checkout");
     } catch {
@@ -79,6 +111,39 @@ export default function AddPetPage() {
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
+              mb: 2,
+            }}
+          >
+            <Avatar
+              src={previewUrl ?? undefined}
+              sx={{ width: 96, height: 96, bgcolor: "action.hover" }}
+            >
+              {!previewUrl && (
+                <PetsIcon sx={{ fontSize: 40, color: "text.disabled" }} />
+              )}
+            </Avatar>
+            <Button component="label" size="small">
+              Upload Photo
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleFileChange}
+              />
+            </Button>
+            {fileError && (
+              <Typography variant="caption" color="error">
+                {fileError}
+              </Typography>
+            )}
+          </Box>
+
           <TextField
             label="Pet name"
             fullWidth

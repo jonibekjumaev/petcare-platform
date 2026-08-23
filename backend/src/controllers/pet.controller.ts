@@ -16,7 +16,20 @@ export const createPet = async (
     if (!memberId)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
 
-    const input: PetInput = req.body;
+    const input: PetInput = {
+      petType: req.body.petType,
+      petGender: req.body.petGender,
+      petName: req.body.petName,
+      petBreed: req.body.petBreed,
+      petAgeMonths: req.body.petAgeMonths
+        ? Number(req.body.petAgeMonths)
+        : undefined,
+      petWeight: req.body.petWeight ? Number(req.body.petWeight) : undefined,
+      petNotes: req.body.petNotes,
+    };
+
+    if (req.file) input.petImage = `/uploads/pets/${req.file.filename}`;
+
     const result = await petService.createPet(memberId, input);
 
     res.status(HttpCode.CREATED).json(toPetDTO(result));
@@ -75,7 +88,20 @@ export const updatePet = async (
     if (!memberId)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
 
-    const input: PetUpdateInput = req.body;
+    const input: PetUpdateInput = {
+      _id: req.body._id,
+      petType: req.body.petType,
+      petGender: req.body.petGender,
+      petStatus: req.body.petStatus,
+      petName: req.body.petName,
+      petBreed: req.body.petBreed,
+      petAgeMonths: req.body.petAgeMonths
+        ? Number(req.body.petAgeMonths)
+        : undefined,
+      petWeight: req.body.petWeight ? Number(req.body.petWeight) : undefined,
+      petNotes: req.body.petNotes,
+    };
+    if (req.file) input.petImage = `/uploads/pets/${req.file.filename}`;
 
     const result = await petService.updatePet(memberId, input);
 

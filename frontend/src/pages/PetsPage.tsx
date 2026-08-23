@@ -3,6 +3,7 @@ import { Link as RouterLink } from "react-router";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
@@ -16,12 +17,15 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
+import PetsIcon from "@mui/icons-material/Pets";
 import type { PetDTO } from "@petcare/shared";
 import {
   useGetAllPetsQuery,
   useDeletePetMutation,
 } from "../features/pets/petApi";
 import EditPetDialog from "../components/EditPetDialog";
+
+const PET_IMAGE_HEIGHT = 180;
 
 export default function PetsPage() {
   const { data: pets, isLoading, isError } = useGetAllPetsQuery();
@@ -71,8 +75,51 @@ export default function PetsPage() {
         <Grid container spacing={3}>
           {pets.map((pet) => (
             <Grid key={pet._id} size={{ xs: 12, sm: 6, md: 4 }}>
-              <Card>
-                <CardContent>
+              <Card
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                {pet.petImage ? (
+                  <Box
+                    sx={{
+                      height: PET_IMAGE_HEIGHT,
+                      bgcolor: "action.hover",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={pet.petImage}
+                      alt={pet.petName}
+                      sx={{
+                        height: "100%",
+                        width: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </Box>
+                ) : (
+                  <Box
+                    sx={{
+                      height: PET_IMAGE_HEIGHT,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      bgcolor: "action.hover",
+                    }}
+                  >
+                    <PetsIcon sx={{ fontSize: 64, color: "text.disabled" }} />
+                  </Box>
+                )}
+
+                <CardContent sx={{ flexGrow: 1 }}>
                   <Typography variant="h6">{pet.petName}</Typography>
                   <Box
                     sx={{ display: "flex", gap: 1, flexWrap: "wrap", my: 1 }}
@@ -123,7 +170,11 @@ export default function PetsPage() {
         </Grid>
       )}
 
-      <EditPetDialog pet={editingPet} onClose={() => setEditingPet(null)} />
+      <EditPetDialog
+        key={editingPet?._id}
+        pet={editingPet}
+        onClose={() => setEditingPet(null)}
+      />
 
       <Dialog open={!!deletingPet} onClose={() => setDeletingPet(null)}>
         <DialogTitle>Delete pet?</DialogTitle>

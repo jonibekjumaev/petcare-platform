@@ -4,7 +4,7 @@ import { ProductDTO } from "./product.dto.js";
 export interface OrderDTO {
   _id: string;
   memberId: string;
-  petId: string;
+  petId?: string;
   orderStatus: OrderStatus;
   orderTotal: number;
   orderDelivery: number;

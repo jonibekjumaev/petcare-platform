@@ -13,7 +13,7 @@ const OrderSchema = new Schema<Order>(
     petId: {
       type: Schema.Types.ObjectId,
       ref: "Pet",
-      required: true,
+      required: false,
     },
 
     orderStatus: {

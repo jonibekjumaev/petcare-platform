@@ -35,6 +35,9 @@ export default function Header() {
         <Button color="inherit" component={RouterLink} to="/products">
           Products
         </Button>
+        <Button color="inherit" component={RouterLink} to="/help">
+          Help
+        </Button>
 
         <IconButton color="inherit" component={RouterLink} to="/cart">
           <Badge badgeContent={cartCount} color="secondary">

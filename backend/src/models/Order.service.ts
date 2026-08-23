@@ -30,7 +30,8 @@ class OrderService {
     input: OrderInput,
   ): Promise<Order> {
     const memberObjectId = shapeIntoMongooseObjectId(memberId);
-    const petObjectId = shapeIntoMongooseObjectId(input.petId);
+    let petObjectId: ReturnType<typeof shapeIntoMongooseObjectId> | undefined;
+    if (input.petId) petObjectId = shapeIntoMongooseObjectId(input.petId);
 
     let amount = 0;
     const orderItemsData: {
@@ -179,10 +180,47 @@ class OrderService {
     const memberObjectId = shapeIntoMongooseObjectId(memberId);
     const orderObjectId = shapeIntoMongooseObjectId(input._id);
 
+    // Member faqat o'z pending orderini Cancel yoki Pay qila oladi —
+    // boshqa hech qanday statusga to'g'ridan-to'g'ri o'ta olmaydi.
+    const allowedTargets = [OrderStatus.PROCESS, OrderStatus.DELETE];
+    if (!input.orderStatus || !allowedTargets.includes(input.orderStatus)) {
+      throw new Errors(HttpCode.BAD_REQUEST, Message.NO_DATA_FOUND); // <- loyihangizdagi mos Message konstantasini qo'ying
+    }
+
+    const existingOrder = await this.orderModel
+      .findOne({ _id: orderObjectId, memberId: memberObjectId })
+      .exec();
+    if (!existingOrder) {
+      throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+    }
+    if (existingOrder.orderStatus !== OrderStatus.PAUSE) {
+      throw new Errors(HttpCode.BAD_REQUEST, Message.NO_DATA_FOUND); // <- shu yerda ham mos Message
+    }
+
+    // Cancel qilinganda stock admin cancel yo'lidagidek qaytariladi.
+    if (input.orderStatus === OrderStatus.DELETE) {
+      const items = await this.orderItemModel
+        .find({ orderId: orderObjectId })
+        .exec();
+
+      await Promise.all(
+        items.map((item) =>
+          this.productModel
+            .findByIdAndUpdate(item.productId, {
+              $inc: {
+                productLeftCount: item.itemQuantity,
+                productSold: -item.itemQuantity,
+              },
+            })
+            .exec(),
+        ),
+      );
+    }
+
     const result = await this.orderModel
       .findOneAndUpdate(
         { _id: orderObjectId, memberId: memberObjectId },
-        { orderStatus: input.orderStatus },
+        { $set: { orderStatus: input.orderStatus } },
         { new: true },
       )
       .exec();
@@ -275,7 +313,7 @@ class OrderService {
     const result = await this.orderModel
       .findOneAndUpdate(
         { _id: orderObjectId },
-        { orderStatus: newStatus },
+        { $set: { orderStatus: newStatus } },
         { new: true },
       )
       .exec();

@@ -11,6 +11,7 @@ import PetsPage from "../pages/PetsPage";
 import OrderHistoryPage from "../pages/OrderHistoryPage";
 import ProfilePage from "../pages/ProfilePage";
 import ChatPage from "../pages/ChatPage";
+import HelpPage from "../pages/HelpPage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
 
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "products", element: <ProductsPage /> },
       { path: "product/:id", element: <ProductDetailPage /> },
       { path: "cart", element: <CartPage /> },
+      { path: "help", element: <HelpPage /> },
       {
         path: "checkout",
         element: (

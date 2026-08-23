@@ -4,7 +4,7 @@ import { OrderStatus } from "../enums/order.enum";
 export interface Order {
   _id: ObjectId;
   memberId: ObjectId;
-  petId: ObjectId;
+  petId?: ObjectId;
   orderStatus: OrderStatus;
   orderTotal: number;
   orderDelivery: number;
@@ -28,7 +28,7 @@ export interface OrderItemInput {
 }
 
 export interface OrderInput {
-  petId: string;
+  petId?: string;
   orderDelivery: number;
   items: OrderItemInput[];
 }

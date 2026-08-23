@@ -15,7 +15,6 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import FormHelperText from "@mui/material/FormHelperText";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import type { RootState } from "../app/store";
@@ -26,8 +25,10 @@ import type { OrderDTO } from "@petcare/shared";
 
 const DELIVERY_FEE = 5;
 
+// Pet selection is optional: a customer without a registered pet can still
+// place an order, so no validation is enforced on this field.
 const checkoutSchema = z.object({
-  petId: z.string().min(1, "Please select a pet"),
+  petId: z.string().optional(),
 });
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
@@ -45,11 +46,7 @@ export default function CheckoutPage() {
   const [createOrder, { isLoading: isPlacingOrder, error: orderError }] =
     useCreateOrderMutation();
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CheckoutFormValues>({
+  const { control, handleSubmit } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: { petId: "" },
   });
@@ -63,7 +60,9 @@ export default function CheckoutPage() {
   const onSubmit = async (values: CheckoutFormValues) => {
     try {
       const order = await createOrder({
-        petId: values.petId,
+        // "" means "no pet selected" — send undefined so it's omitted
+        // from the request entirely, matching CreateOrderRequestDTO.
+        petId: values.petId ? values.petId : undefined,
         orderDelivery: DELIVERY_FEE,
         items: cartItems.map((item) => ({
           productId: item.productId,
@@ -134,12 +133,19 @@ export default function CheckoutPage() {
           <Grid size={{ xs: 12, md: 7 }}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
-                Pet
+                Pet{" "}
+                <Typography
+                  component="span"
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  (optional)
+                </Typography>
               </Typography>
 
               {pets && pets.length === 0 ? (
                 <Alert
-                  severity="warning"
+                  severity="info"
                   action={
                     <Button
                       color="inherit"
@@ -151,14 +157,15 @@ export default function CheckoutPage() {
                     </Button>
                   }
                 >
-                  You don't have any pets yet.
+                  You don't have any pets yet. You can still place this order —
+                  add a pet if you'd like to link it to one.
                 </Alert>
               ) : (
                 <Controller
                   name="petId"
                   control={control}
                   render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.petId}>
+                    <FormControl fullWidth>
                       <InputLabel id="pet-select-label">
                         Select a pet
                       </InputLabel>
@@ -167,15 +174,15 @@ export default function CheckoutPage() {
                         label="Select a pet"
                         {...field}
                       >
+                        <MenuItem value="">
+                          <em>No pet — order without linking a pet</em>
+                        </MenuItem>
                         {pets?.map((pet) => (
                           <MenuItem key={pet._id} value={pet._id}>
                             {pet.petName}
                           </MenuItem>
                         ))}
                       </Select>
-                      {errors.petId && (
-                        <FormHelperText>{errors.petId.message}</FormHelperText>
-                      )}
                     </FormControl>
                   )}
                 />
@@ -241,7 +248,7 @@ export default function CheckoutPage() {
                 variant="contained"
                 fullWidth
                 size="large"
-                disabled={isPlacingOrder || (pets ? pets.length === 0 : false)}
+                disabled={isPlacingOrder}
               >
                 Place Order
               </Button>

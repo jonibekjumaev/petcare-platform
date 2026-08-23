@@ -6,7 +6,7 @@ import { OrderWithItems } from "../types/member";
 export const toOrderDTO = (order: Order): OrderDTO => ({
   _id: String(order._id),
   memberId: String(order.memberId),
-  petId: String(order.petId),
+  petId: order.petId ? String(order.petId) : undefined,
   orderStatus: order.orderStatus,
   orderTotal: order.orderTotal,
   orderDelivery: order.orderDelivery,

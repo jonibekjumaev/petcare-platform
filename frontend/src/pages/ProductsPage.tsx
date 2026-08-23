@@ -18,6 +18,7 @@ import Inventory2Icon from "@mui/icons-material/Inventory2";
 import { Link as RouterLink, useSearchParams } from "react-router";
 import { ProductSortOption, ProductCategory } from "@petcare/shared";
 import { useGetAllProductsQuery } from "../features/products/productApi";
+import { formatPrice } from "../lib/format";
 
 const PRODUCT_IMAGE_HEIGHT = 180;
 
@@ -224,7 +225,7 @@ export default function ProductsPage() {
                           {product.productName}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          ${product.productPrice}
+                          {formatPrice(product.productPrice)}
                         </Typography>
                       </CardContent>
                     </CardActionArea>

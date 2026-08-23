@@ -14,6 +14,7 @@ import PetsIcon from "@mui/icons-material/Pets";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import type { RootState } from "../app/store";
 import { useGetAllProductsQuery } from "../features/products/productApi";
+import { formatPrice } from "../lib/format";
 
 const FEATURES = [
   {
@@ -157,7 +158,7 @@ export default function HomePage() {
                         {product.productName}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        ${product.productPrice}
+                        {formatPrice(product.productPrice)}
                       </Typography>
                     </CardContent>
                   </Card>

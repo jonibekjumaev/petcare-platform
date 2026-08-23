@@ -13,6 +13,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
 import type { RootState } from "../app/store";
 import { removeFromCart, updateQuantity } from "../features/cart/cartSlice";
+import { formatPrice } from "../lib/format";
 
 export default function CartPage() {
   const dispatch = useDispatch();
@@ -74,7 +75,7 @@ export default function CartPage() {
               <Box sx={{ flexGrow: 1 }}>
                 <Typography variant="subtitle1">{item.productName}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  ${item.productPrice} each
+                  {formatPrice(item.productPrice)} each
                 </Typography>
               </Box>
 
@@ -113,7 +114,7 @@ export default function CartPage() {
                 variant="subtitle1"
                 sx={{ width: 80, textAlign: "right" }}
               >
-                ${(item.productPrice * item.quantity).toFixed(2)}
+                {formatPrice(item.productPrice * item.quantity)}
               </Typography>
 
               <IconButton
@@ -136,7 +137,7 @@ export default function CartPage() {
               sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
             >
               <Typography>Subtotal</Typography>
-              <Typography>${subtotal.toFixed(2)}</Typography>
+              <Typography>{formatPrice(subtotal)}</Typography>
             </Box>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               Shipping and taxes calculated at checkout.

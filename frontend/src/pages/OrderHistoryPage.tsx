@@ -25,6 +25,7 @@ import {
   useGetAllOrdersQuery,
   useUpdateOrderStatusMutation,
 } from "../features/orders/orderApi";
+import { formatPrice } from "../lib/format";
 
 // DELETE (cancelled) orders are intentionally excluded — only these
 // three categories are shown to the customer.
@@ -196,10 +197,10 @@ export default function OrderHistoryPage() {
                             "Product no longer available"}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          ${item.itemPrice} × {item.itemQuantity} =
+                          {formatPrice(item.itemPrice)} × {item.itemQuantity} =
                         </Typography>
                         <Typography sx={{ fontWeight: 600 }}>
-                          {`$${(item.itemPrice * item.itemQuantity).toFixed(2)}`}
+                          {formatPrice(item.itemPrice * item.itemQuantity)}
                         </Typography>
                       </Box>
                     );
@@ -219,7 +220,7 @@ export default function OrderHistoryPage() {
                       Product price
                     </Typography>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {`$${subtotal.toFixed(2)}`}
+                      {formatPrice(subtotal)}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       +
@@ -228,7 +229,7 @@ export default function OrderHistoryPage() {
                       Delivery cost
                     </Typography>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {`$${order.orderDelivery.toFixed(2)}`}
+                      {formatPrice(order.orderDelivery)}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       =
@@ -237,7 +238,7 @@ export default function OrderHistoryPage() {
                       Total
                     </Typography>
                     <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                      {`$${order.orderTotal.toFixed(2)}`}
+                      {formatPrice(order.orderTotal)}
                     </Typography>
 
                     {order.orderStatus === OrderStatus.PAUSE && (

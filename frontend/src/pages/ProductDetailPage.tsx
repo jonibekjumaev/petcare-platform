@@ -12,6 +12,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import { useGetProductQuery } from "../features/products/productApi";
 import { addToCart } from "../features/cart/cartSlice";
+import { formatPrice } from "../lib/format";
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -76,7 +77,7 @@ export default function ProductDetailPage() {
           </Box>
 
           <Typography variant="h5" color="primary" gutterBottom>
-            ${product.productPrice}
+            {formatPrice(product.productPrice)}
           </Typography>
 
           {product.productDesc && (

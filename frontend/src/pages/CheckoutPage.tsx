@@ -22,6 +22,7 @@ import { clearCart } from "../features/cart/cartSlice";
 import { useGetAllPetsQuery } from "../features/pets/petApi";
 import { useCreateOrderMutation } from "../features/orders/orderApi";
 import type { OrderDTO } from "@petcare/shared";
+import { formatPrice } from "../lib/format";
 
 const DELIVERY_FEE = 5;
 
@@ -87,7 +88,7 @@ export default function CheckoutPage() {
           Order #{placedOrder._id}
         </Typography>
         <Typography variant="h6" sx={{ mb: 3 }}>
-          Total: ${placedOrder.orderTotal.toFixed(2)}
+          Total: {formatPrice(placedOrder.orderTotal)}
         </Typography>
         <Button variant="contained" onClick={() => navigate("/")}>
           Continue Shopping
@@ -216,7 +217,7 @@ export default function CheckoutPage() {
                     {item.productName} × {item.quantity}
                   </Typography>
                   <Typography variant="body2">
-                    ${(item.productPrice * item.quantity).toFixed(2)}
+                    {formatPrice(item.productPrice * item.quantity)}
                   </Typography>
                 </Box>
               ))}
@@ -227,20 +228,20 @@ export default function CheckoutPage() {
                 sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
               >
                 <Typography>Subtotal</Typography>
-                <Typography>${subtotal.toFixed(2)}</Typography>
+                <Typography>{formatPrice(subtotal)}</Typography>
               </Box>
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}
               >
                 <Typography>Delivery</Typography>
-                <Typography>${DELIVERY_FEE.toFixed(2)}</Typography>
+                <Typography>{formatPrice(DELIVERY_FEE)}</Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
               <Box
                 sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}
               >
                 <Typography variant="h6">Total</Typography>
-                <Typography variant="h6">${total.toFixed(2)}</Typography>
+                <Typography variant="h6">{formatPrice(total)}</Typography>
               </Box>
 
               <Button

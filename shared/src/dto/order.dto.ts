@@ -34,7 +34,7 @@ export interface OrderItemRequestDTO {
 }
 
 export interface CreateOrderRequestDTO {
-  petId: string;
+  petId?: string;
   orderDelivery: number;
   items: OrderItemRequestDTO[];
 }

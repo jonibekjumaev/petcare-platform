@@ -22,7 +22,7 @@ import type { PetDTO } from "@petcare/shared";
 import { PetType, PetGender } from "@petcare/shared";
 import { useUpdatePetMutation } from "../features/pets/petApi";
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB — backenddagi multer limitiga mos
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 const editPetSchema = z.object({
   petName: z.string().min(1, "Pet name is required"),
@@ -76,7 +76,7 @@ export default function EditPetDialog({ pet, onClose }: EditPetDialogProps) {
       : undefined,
   });
 
-  // Yangi tanlangan fayl uchun yaratilgan blob: URL'ni xotiradan tozalash
+  
   useEffect(() => {
     return () => {
       if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
@@ -116,7 +116,7 @@ export default function EditPetDialog({ pet, onClose }: EditPetDialogProps) {
       }).unwrap();
       onClose();
     } catch {
-      // Handled error
+      
     }
   };
 

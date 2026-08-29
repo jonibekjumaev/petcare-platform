@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,13 +20,10 @@ import type { RootState } from "../app/store";
 import { clearCart } from "../features/cart/cartSlice";
 import { useGetAllPetsQuery } from "../features/pets/petApi";
 import { useCreateOrderMutation } from "../features/orders/orderApi";
-import type { OrderDTO } from "@petcare/shared";
 import { formatPrice } from "../lib/format";
 
 const DELIVERY_FEE = 5;
 
-// Pet selection is optional: a customer without a registered pet can still
-// place an order, so no validation is enforced on this field.
 const checkoutSchema = z.object({
   petId: z.string().optional(),
 });
@@ -36,7 +32,6 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 export default function CheckoutPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [placedOrder, setPlacedOrder] = useState<OrderDTO | null>(null);
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const {
@@ -60,9 +55,7 @@ export default function CheckoutPage() {
 
   const onSubmit = async (values: CheckoutFormValues) => {
     try {
-      const order = await createOrder({
-        // "" means "no pet selected" — send undefined so it's omitted
-        // from the request entirely, matching CreateOrderRequestDTO.
+      await createOrder({
         petId: values.petId ? values.petId : undefined,
         orderDelivery: DELIVERY_FEE,
         items: cartItems.map((item) => ({
@@ -72,30 +65,10 @@ export default function CheckoutPage() {
       }).unwrap();
 
       dispatch(clearCart());
-      setPlacedOrder(order);
+      navigate("/orders");
     } catch {
-      /* Handled orderError*/
     }
   };
-
-  if (placedOrder) {
-    return (
-      <Container sx={{ py: 8, textAlign: "center" }}>
-        <Typography variant="h4" gutterBottom>
-          Order placed!
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
-          Order #{placedOrder._id}
-        </Typography>
-        <Typography variant="h6" sx={{ mb: 3 }}>
-          Total: {formatPrice(placedOrder.orderTotal)}
-        </Typography>
-        <Button variant="contained" onClick={() => navigate("/")}>
-          Continue Shopping
-        </Button>
-      </Container>
-    );
-  }
 
   if (cartItems.length === 0) {
     return (

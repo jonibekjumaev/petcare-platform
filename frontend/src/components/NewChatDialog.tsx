@@ -50,7 +50,7 @@ export default function NewChatDialog({
       onCreated(session._id);
       onClose();
     } catch {
-      // xato allaqachon error orqali ko'rsatiladi
+      
     }
   };
 

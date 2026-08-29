@@ -26,16 +26,13 @@ import {
   useUpdateOrderStatusMutation,
 } from "../features/orders/orderApi";
 import { formatPrice } from "../lib/format";
+import PaymentMethodCard from "../components/profile/PaymentMethodCard";
 
-// DELETE (cancelled) orders are intentionally excluded — only these
-// three categories are shown to the customer.
 const TABS: { status: OrderStatus; label: string }[] = [
   { status: OrderStatus.PAUSE, label: "Paused Orders" },
   { status: OrderStatus.PROCESS, label: "Process Orders" },
   { status: OrderStatus.FINISH, label: "Finished Orders" },
 ];
-
-const CARD_BRANDS = ["VISA", "MASTERCARD", "AMEX", "PAYPAL"];
 
 export default function OrderHistoryPage() {
   const member = useSelector((state: RootState) => state.auth.member);
@@ -43,6 +40,7 @@ export default function OrderHistoryPage() {
   const [activeTab, setActiveTab] = useState<OrderStatus>(OrderStatus.PAUSE);
   const [cancelingOrderId, setCancelingOrderId] = useState<string | null>(null);
   const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
+  const [receivingOrderId, setReceivingOrderId] = useState<string | null>(null);
 
   const {
     data: orders,
@@ -64,9 +62,21 @@ export default function OrderHistoryPage() {
         orderStatus: OrderStatus.PROCESS,
       }).unwrap();
     } catch {
-      /* Xato yuqorida Alert orqali ko'rsatiladi */
     } finally {
       setPayingOrderId(null);
+    }
+  };
+
+  const handleMarkDelivered = async (orderId: string) => {
+    setReceivingOrderId(orderId);
+    try {
+      await updateOrderStatus({
+        _id: orderId,
+        orderStatus: OrderStatus.FINISH,
+      }).unwrap();
+    } catch {
+    } finally {
+      setReceivingOrderId(null);
     }
   };
 
@@ -79,7 +89,6 @@ export default function OrderHistoryPage() {
       }).unwrap();
       setCancelingOrderId(null);
     } catch {
-      /* Dialog ochiq qoladi, foydalanuvchi qayta urinishi mumkin */
     }
   };
 
@@ -271,6 +280,28 @@ export default function OrderHistoryPage() {
                         </Button>
                       </Box>
                     )}
+
+                    {order.orderStatus === OrderStatus.PROCESS && (
+                      <Box sx={{ ml: "auto" }}>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          disabled={isUpdating}
+                          onClick={() => handleMarkDelivered(order._id)}
+                          sx={{ minWidth: 112 }}
+                        >
+                          {receivingOrderId === order._id && isUpdating ? (
+                            <CircularProgress
+                              size={16}
+                              sx={{ color: "inherit" }}
+                            />
+                          ) : (
+                            "Mark as Delivered"
+                          )}
+                        </Button>
+                      </Box>
+                    )}
                   </Box>
                 </Paper>
               );
@@ -310,99 +341,10 @@ export default function OrderHistoryPage() {
             </Box>
           </Paper>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography
-              variant="subtitle2"
-              color="text.secondary"
-              sx={{ mb: 2 }}
-            >
-              Payment Method
-            </Typography>
-
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-              <Box
-                sx={{
-                  px: 2,
-                  py: 1.25,
-                  borderRadius: 1,
-                  bgcolor: "action.hover",
-                }}
-              >
-                <Typography variant="body2">
-                  Card number : **** 4090 2002 7495
-                </Typography>
-              </Box>
-              <Box sx={{ display: "flex", gap: 1.5 }}>
-                <Box
-                  sx={{
-                    flex: 1,
-                    px: 2,
-                    py: 1.25,
-                    borderRadius: 1,
-                    bgcolor: "action.hover",
-                  }}
-                >
-                  <Typography variant="body2">07 / 24</Typography>
-                </Box>
-                <Box
-                  sx={{
-                    flex: 1,
-                    px: 2,
-                    py: 1.25,
-                    borderRadius: 1,
-                    bgcolor: "action.hover",
-                  }}
-                >
-                  <Typography variant="body2">CVV : 010</Typography>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  px: 2,
-                  py: 1.25,
-                  borderRadius: 1,
-                  bgcolor: "action.hover",
-                }}
-              >
-                <Typography variant="body2">
-                  {member?.memberNick ?? "Card holder"}
-                </Typography>
-              </Box>
-            </Box>
-
-            <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
-              {CARD_BRANDS.map((brand) => (
-                <Typography
-                  key={brand}
-                  component="span"
-                  sx={{
-                    px: 1,
-                    py: 0.5,
-                    borderRadius: 0.5,
-                    bgcolor: "action.selected",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: 0.5,
-                  }}
-                >
-                  {brand}
-                </Typography>
-              ))}
-            </Box>
-
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: "block", mt: 2 }}
-            >
-              Demo card on file — shown for display purposes only, not a real
-              payment method.
-            </Typography>
-          </Paper>
+          <PaymentMethodCard member={member ?? undefined} />
         </Grid>
       </Grid>
 
-      {/* Cancel confirmation */}
       <Dialog
         open={!!cancelingOrderId}
         onClose={() => setCancelingOrderId(null)}

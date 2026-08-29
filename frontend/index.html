@@ -4,7 +4,42 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+
+    <title>PetCare — Pet supplies and AI care advice</title>
+    <meta
+      name="description"
+      content="Shop food, toys and care essentials for your pet, and get advice from an AI advisor that knows their profile and order history."
+    />
+
+    <!--
+      Tells the browser both colour schemes are supported, so native UI
+      (scrollbars, form controls, autofill) is painted to match the page
+      instead of framing a dark site in white chrome.
+    -->
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FDFBF7" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121410" />
+
+    <!--
+      Pre-paint background, before any JavaScript runs.
+
+      The app is client-rendered, so there is a window between first paint and
+      React mounting where the page is empty. Without this it is browser-default
+      white — a hard flash for anyone in dark mode. These two rules are the only
+      hard-coded colours outside the theme, and they are deliberate: nothing
+      that runs this early can read a TypeScript token.
+
+      They cover the OS preference. A user who has manually chosen the opposite
+      of their OS setting may still see a brief mismatch of the background only;
+      InitColorSchemeScript in main.tsx corrects it as soon as the bundle runs.
+      Keep these values in sync with lightSurface.page / darkSurface.page.
+    -->
+    <style>
+      html { background-color: #FDFBF7; }
+      @media (prefers-color-scheme: dark) {
+        html { background-color: #121410; }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

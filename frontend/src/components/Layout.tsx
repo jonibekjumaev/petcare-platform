@@ -1,11 +1,22 @@
+
 import { Outlet } from "react-router";
 import Box from "@mui/material/Box";
 import Header from "./Header";
 import Footer from "./Footer";
+import ScrollToTop from "./ScrollToTop";
 
 export default function Layout() {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        bgcolor: "background.default",
+        overflowX: "clip",
+      }}
+    >
+      <ScrollToTop />
       <Header />
       <Box component="main" sx={{ flexGrow: 1 }}>
         <Outlet />

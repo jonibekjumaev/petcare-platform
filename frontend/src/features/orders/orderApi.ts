@@ -42,8 +42,8 @@ export const orderApi = api.injectEndpoints({
         method: "POST",
         body: input,
       }),
-      // Cancel qilinganda mahsulot stocki qayta tiklanadi,
-      // shuning uchun Product cache ham invalidate qilinishi kerak.
+      
+      
       invalidatesTags: ["Product", "Order"],
     }),
   }),

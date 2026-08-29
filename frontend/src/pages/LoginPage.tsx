@@ -34,7 +34,7 @@ export default function LoginPage() {
       await login(values).unwrap();
       navigate("/");
     } catch {
-      // mutation error
+      
     }
   };
 

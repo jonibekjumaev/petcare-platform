@@ -51,6 +51,27 @@ export const getAllSessions = async (
   }
 };
 
+export const deleteSession = async (
+  req: ExtendedRequest,
+  res: Response,
+): Promise<void> => {
+  try {
+    const memberId = req.member?._id;
+    if (!memberId) {
+      throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
+    }
+
+    const sessionId = req.body._id;
+    const result = await chatService.deleteSession(memberId, sessionId);
+
+    res.status(HttpCode.OK).json(toChatSessionDTO(result));
+  } catch (err) {
+    console.error("Error: deleteSession", err);
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
+
 export const getSessionMessages = async (
   req: ExtendedRequest<{ id: string }>,
   res: Response,

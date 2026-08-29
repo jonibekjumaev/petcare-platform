@@ -25,7 +25,8 @@ import {
 } from "../features/pets/petApi";
 import EditPetDialog from "../components/EditPetDialog";
 
-const PET_IMAGE_HEIGHT = 180;
+
+const PET_IMAGE_RATIO = "1 / 1";
 
 export default function PetsPage() {
   const { data: pets, isLoading, isError } = useGetAllPetsQuery();
@@ -40,7 +41,7 @@ export default function PetsPage() {
       await deletePet(deletingPet._id).unwrap();
       setDeletingPet(null);
     } catch {
-      // xato holatida dialog ochiq qoladi, foydalanuvchi qayta urinishi mumkin
+      
     }
   };
 
@@ -84,35 +85,24 @@ export default function PetsPage() {
                 }}
               >
                 {pet.petImage ? (
-                  <Box
+                  <CardMedia
+                    component="img"
+                    image={pet.petImage}
+                    alt={pet.petName}
+                    loading="lazy"
                     sx={{
-                      height: PET_IMAGE_HEIGHT,
-                      bgcolor: "action.hover",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      overflow: "hidden",
+                      aspectRatio: PET_IMAGE_RATIO,
+                      objectFit: "cover",
+                      bgcolor: "background.muted",
                     }}
-                  >
-                    <CardMedia
-                      component="img"
-                      image={pet.petImage}
-                      alt={pet.petName}
-                      sx={{
-                        height: "100%",
-                        width: "100%",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </Box>
+                  />
                 ) : (
                   <Box
                     sx={{
-                      height: PET_IMAGE_HEIGHT,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      bgcolor: "action.hover",
+                      aspectRatio: PET_IMAGE_RATIO,
+                      display: "grid",
+                      placeItems: "center",
+                      bgcolor: "background.muted",
                     }}
                   >
                     <PetsIcon sx={{ fontSize: 64, color: "text.disabled" }} />

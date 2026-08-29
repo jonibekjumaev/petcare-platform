@@ -33,6 +33,7 @@ import {
 
 import {
   createSession,
+  deleteSession,
   getAllSessions,
   getSessionMessages,
   sendMessage,
@@ -86,6 +87,7 @@ router.post("/order/update", verifyAuth, updateOrder);
 
 router.post("/chat/session/create", verifyAuth, createSession);
 router.get("/chat/session/all", verifyAuth, getAllSessions);
+router.post("/chat/session/delete", verifyAuth, deleteSession);
 router.get("/chat/session/:id", verifyAuth, getSessionMessages);
 router.post("/chat/message", verifyAuth, sendMessage);
 

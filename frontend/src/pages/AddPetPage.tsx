@@ -3,7 +3,7 @@ import type { ChangeEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -17,11 +17,43 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
 import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
 import PetsIcon from "@mui/icons-material/Pets";
+import PhotoCameraIcon from "@mui/icons-material/PhotoCameraOutlined";
 import { PetType, PetGender } from "@petcare/shared";
 import { useCreatePetMutation } from "../features/pets/petApi";
+import { PET_DRAFT_KEY } from "../data/advisor";
+import { radius, shadow } from "../theme";
 
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB — backenddagi multer limitiga mos
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
+function readDraft(params: URLSearchParams): Partial<AddPetFormValues> {
+  let source = params;
+  if (!source.get("petType")) {
+    try {
+      const stored = sessionStorage.getItem(PET_DRAFT_KEY);
+      if (stored) source = new URLSearchParams(stored);
+    } catch {
+    }
+  }
+
+  const draft: Partial<AddPetFormValues> = {};
+
+  const type = source.get("petType");
+  if (type && Object.values(PetType).includes(type as PetType)) {
+    draft.petType = type as PetType;
+  }
+
+  const months = source.get("petAgeMonths");
+  if (months && /^\d+$/.test(months)) draft.petAgeMonths = months;
+
+  const weight = source.get("petWeight");
+  if (weight && Number.isFinite(Number(weight)) && Number(weight) > 0) {
+    draft.petWeight = weight;
+  }
+
+  return draft;
+}
 
 const addPetSchema = z.object({
   petName: z.string().min(1, "Pet name is required"),
@@ -42,6 +74,7 @@ type AddPetFormValues = z.infer<typeof addPetSchema>;
 
 export default function AddPetPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [createPet, { isLoading, error }] = useCreatePetMutation();
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -55,10 +88,13 @@ export default function AddPetPage() {
     formState: { errors },
   } = useForm<AddPetFormValues>({
     resolver: zodResolver(addPetSchema),
-    defaultValues: { petType: PetType.DOG, petGender: PetGender.MALE },
+    defaultValues: {
+      petType: PetType.DOG,
+      petGender: PetGender.MALE,
+      ...readDraft(searchParams),
+    },
   });
 
-  // Yangi tanlangan fayl uchun yaratilgan blob: URL'ni xotiradan tozalash
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -93,15 +129,25 @@ export default function AddPetPage() {
         petNotes: values.petNotes || undefined,
         imageFile: imageFile ?? undefined,
       }).unwrap();
-      navigate("/checkout");
+      navigate("/pets");
     } catch {
-      // xato allaqachon UI'da error orqali ko'rsatiladi
     }
   };
 
   return (
     <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper sx={{ p: 4 }}>
+      <Paper
+        sx={(t) => ({
+          p: 4,
+          borderRadius: `${radius.lg}px`,
+          boxShadow: shadow.sm,
+          backgroundColor: "#FFFFFF",
+          ...t.applyStyles("dark", {
+            backgroundColor: t.vars.palette.background.paper,
+            border: `1px solid ${t.vars.palette.divider}`,
+          }),
+        })}
+      >
         <Typography variant="h4" gutterBottom>
           Add a Pet
         </Typography>
@@ -110,7 +156,17 @@ export default function AddPetPage() {
           recommendations.
         </Typography>
 
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          sx={(t) => ({
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "#FFFFFF",
+              ...t.applyStyles("dark", { backgroundColor: t.vars.palette.background.paper }),
+            },
+          })}
+        >
           <Box
             sx={{
               display: "flex",
@@ -120,23 +176,46 @@ export default function AddPetPage() {
               mb: 2,
             }}
           >
-            <Avatar
-              src={previewUrl ?? undefined}
-              sx={{ width: 96, height: 96, bgcolor: "action.hover" }}
-            >
-              {!previewUrl && (
-                <PetsIcon sx={{ fontSize: 40, color: "text.disabled" }} />
-              )}
-            </Avatar>
-            <Button component="label" size="small">
+            <Box sx={{ position: "relative" }}>
+              <Avatar
+                src={previewUrl ?? undefined}
+                sx={{ width: 104, height: 104, bgcolor: "background.muted" }}
+              >
+                {!previewUrl && (
+                  <PetsIcon sx={{ fontSize: 42, color: "text.disabled" }} />
+                )}
+              </Avatar>
+              <IconButton
+                component="label"
+                size="small"
+                aria-label="Upload pet photo"
+                sx={(t) => ({
+                  position: "absolute",
+                  bottom: 2,
+                  right: 2,
+                  bgcolor: "background.paper",
+                  border: 1,
+                  borderColor: "divider",
+                  boxShadow: shadow.sm,
+                  "&:hover": {
+                    bgcolor: t.vars.palette.primary.main,
+                    color: t.vars.palette.primary.contrastText,
+                    borderColor: t.vars.palette.primary.main,
+                  },
+                })}
+              >
+                <PhotoCameraIcon sx={{ fontSize: 16 }} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleFileChange}
+                />
+              </IconButton>
+            </Box>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
               Upload Photo
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handleFileChange}
-              />
-            </Button>
+            </Typography>
             {fileError && (
               <Typography variant="caption" color="error">
                 {fileError}

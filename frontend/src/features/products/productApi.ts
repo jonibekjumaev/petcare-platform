@@ -9,6 +9,8 @@ interface GetAllProductsArgs {
   order?: ProductSortOption;
   productCategory?: ProductCategory;
   search?: string;
+  
+  limit?: number;
 }
 
 export const productApi = api.injectEndpoints({
@@ -22,6 +24,7 @@ export const productApi = api.injectEndpoints({
             ? { productCategory: args.productCategory }
             : {}),
           ...(args?.search ? { search: args.search } : {}),
+          ...(args?.limit ? { limit: args.limit } : {}),
         },
       }),
       providesTags: ["Product"],

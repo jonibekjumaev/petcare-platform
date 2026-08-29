@@ -41,7 +41,7 @@ export const memberApi = api.injectEndpoints({
             dispatch(setCredentials({ member: updatedMember, accessToken }));
           }
         } catch {
-          // xato allaqachon UI'da mutation'ning error holati orqali ko'rsatiladi
+          
         }
       },
     }),

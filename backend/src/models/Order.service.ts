@@ -14,6 +14,17 @@ import { OrderWithItems } from "../libs/types/member";
 import { AnyRecord } from "../libs/types/common";
 import { OrderStatus } from "../libs/enums/order.enum";
 
+/**
+ * Every status jump a MEMBER (not the admin) is allowed to make on their own
+ * order, keyed by the order's current status. Pay or cancel a pending order,
+ * or confirm a shipped one as received — anything else (e.g. jumping
+ * straight from PAUSE to FINISH) is refused.
+ */
+const MEMBER_ALLOWED_TRANSITIONS: Partial<Record<OrderStatus, OrderStatus[]>> = {
+  [OrderStatus.PAUSE]: [OrderStatus.PROCESS, OrderStatus.DELETE],
+  [OrderStatus.PROCESS]: [OrderStatus.FINISH],
+};
+
 class OrderService {
   private readonly orderModel;
   private readonly orderItemModel;
@@ -180,21 +191,19 @@ class OrderService {
     const memberObjectId = shapeIntoMongooseObjectId(memberId);
     const orderObjectId = shapeIntoMongooseObjectId(input._id);
 
-    // Member faqat o'z pending orderini Cancel yoki Pay qila oladi —
-    // boshqa hech qanday statusga to'g'ridan-to'g'ri o'ta olmaydi.
-    const allowedTargets = [OrderStatus.PROCESS, OrderStatus.DELETE];
-    if (!input.orderStatus || !allowedTargets.includes(input.orderStatus)) {
-      throw new Errors(HttpCode.BAD_REQUEST, Message.NO_DATA_FOUND); // <- loyihangizdagi mos Message konstantasini qo'ying
-    }
-
     const existingOrder = await this.orderModel
       .findOne({ _id: orderObjectId, memberId: memberObjectId })
       .exec();
     if (!existingOrder) {
       throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
     }
-    if (existingOrder.orderStatus !== OrderStatus.PAUSE) {
-      throw new Errors(HttpCode.BAD_REQUEST, Message.NO_DATA_FOUND); // <- shu yerda ham mos Message
+
+    // Member faqat MEMBER_ALLOWED_TRANSITIONS'da ro'yxatga olingan
+    // sakrashlarni qila oladi — boshqa hech qanday statusga to'g'ridan-to'g'ri
+    // o'ta olmaydi.
+    const allowedTargets = MEMBER_ALLOWED_TRANSITIONS[existingOrder.orderStatus] ?? [];
+    if (!input.orderStatus || !allowedTargets.includes(input.orderStatus)) {
+      throw new Errors(HttpCode.BAD_REQUEST, Message.NO_DATA_FOUND); // <- loyihangizdagi mos Message konstantasini qo'ying
     }
 
     // Cancel qilinganda stock admin cancel yo'lidagidek qaytariladi.

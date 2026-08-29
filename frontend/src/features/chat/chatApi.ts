@@ -39,6 +39,14 @@ export const chatApi = api.injectEndpoints({
         { type: "Chat", id: arg.sessionId },
       ],
     }),
+    deleteSession: builder.mutation<ChatSessionDTO, string>({
+      query: (id) => ({
+        url: "/chat/session/delete",
+        method: "POST",
+        body: { _id: id },
+      }),
+      invalidatesTags: ["Chat"],
+    }),
   }),
 });
 
@@ -47,4 +55,5 @@ export const {
   useCreateSessionMutation,
   useGetSessionMessagesQuery,
   useSendMessageMutation,
+  useDeleteSessionMutation,
 } = chatApi;

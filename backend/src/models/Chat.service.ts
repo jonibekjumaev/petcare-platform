@@ -67,6 +67,29 @@ class ChatService {
     return result;
   }
 
+  public async deleteSession(
+    memberId: string,
+    sessionId: string,
+  ): Promise<ChatSession> {
+    const memberObjectId = shapeIntoMongooseObjectId(memberId);
+    const sessionObjectId = shapeIntoMongooseObjectId(sessionId);
+
+    const session = await this.chatSessionModel
+      .findOneAndDelete({ _id: sessionObjectId, memberId: memberObjectId })
+      .exec();
+
+    if (!session) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    // No soft-delete status for chat: a conversation carries no other data
+    // that anything downstream needs to keep around, so its messages go with
+    // it rather than sitting orphaned in the collection.
+    await this.chatMessageModel
+      .deleteMany({ sessionId: sessionObjectId })
+      .exec();
+
+    return session;
+  }
+
   public async getSessionMessages(
     memberId: string,
     sessionId: string,

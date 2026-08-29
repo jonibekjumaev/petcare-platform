@@ -1,4 +1,13 @@
 <!-- views/products.ejs -->
+<%
+  const statusBadgeClass = {
+    PAUSE: 'badge-warning',
+    PROCESS: 'badge-success',
+    DELETE: 'badge-danger',
+  };
+  const LOW_STOCK_THRESHOLD = 10;
+%>
+
 <div class="page-header">
   <h1 class="page-title">Products</h1>
   <a href="/admin/product/create" class="btn btn-primary">+ Add Product</a>
@@ -56,6 +65,7 @@
           <th>Pet Type</th>
           <th>Price</th>
           <th>Left</th>
+          <th>Status</th>
           <th></th>
         </tr>
       </thead>
@@ -65,15 +75,34 @@
             <td>
               <% if (product.productImages && product.productImages.length > 0) { %>
                 <img src="<%= product.productImages[0] %>" alt="<%= product.productName %>" class="table-thumb" />
+              <% } else { %>
+                <div class="table-thumb table-thumb--empty" aria-hidden="true">—</div>
               <% } %>
             </td>
-            <td><%= product.productName %></td>
-            <td><%= product.productCategory %></td>
-            <td><%= product.productPetType %></td>
+            <td class="product-name"><%= product.productName %></td>
+            <td><span class="badge badge-neutral"><%= product.productCategory %></span></td>
+            <td><span class="badge badge-neutral"><%= product.productPetType %></span></td>
             <td>$<%= product.productPrice %></td>
-            <td><%= product.productLeftCount %></td>
             <td>
-              <a href="/admin/product/<%= product._id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+              <span class="<%= product.productLeftCount <= LOW_STOCK_THRESHOLD ? 'stock-count stock-count--low' : 'stock-count' %>">
+                <%= product.productLeftCount %>
+              </span>
+            </td>
+            <td>
+              <span class="badge <%= statusBadgeClass[product.productStatus] %>"><%= product.productStatus %></span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <form action="/admin/product/<%= product._id %>" method="POST" class="status-form">
+                  <select name="productStatus" class="form-select form-select--sm">
+                    <option value="PROCESS" <%= product.productStatus === 'PROCESS' ? 'selected' : '' %>>Process</option>
+                    <option value="PAUSE" <%= product.productStatus === 'PAUSE' ? 'selected' : '' %>>Pause</option>
+                    <option value="DELETE" <%= product.productStatus === 'DELETE' ? 'selected' : '' %>>Delete</option>
+                  </select>
+                  <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+                </form>
+                <a href="/admin/product/<%= product._id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+              </div>
             </td>
           </tr>
         <% }); %>

@@ -36,7 +36,7 @@ export default function SignupPage() {
       await signup(values).unwrap();
       navigate("/");
     } catch {
-      // mutation error
+      
     }
   };
 

@@ -20,6 +20,45 @@
   border: 1px solid var(--color-border);
 }
 
+.table-thumb--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg);
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.product-name {
+  font-weight: 600;
+  white-space: normal;
+}
+
+/* Category / pet-type tags — the same pill shape as the status badges, in a
+   quiet neutral tone so they read as metadata rather than a second status. */
+.badge-neutral {
+  background-color: var(--color-bg);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.stock-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.stock-count--low {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+/* Status-change form and Edit link, grouped as one action cluster instead of
+   two unrelated controls competing for the same narrow column. */
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .pagination {
   display: flex;
   align-items: center;

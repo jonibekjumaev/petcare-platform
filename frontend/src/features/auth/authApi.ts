@@ -19,7 +19,7 @@ export const authApi = api.injectEndpoints({
           const { data } = await queryFulfilled;
           dispatch(setCredentials(data));
         } catch {
-          // login failed
+          
         }
       },
     }),
@@ -34,7 +34,7 @@ export const authApi = api.injectEndpoints({
           const { data } = await queryFulfilled;
           dispatch(setCredentials(data));
         } catch {
-          // signup failed
+          
         }
       },
     }),

@@ -2,10 +2,6 @@ import { useRef } from "react";
 import type { FormEvent } from "react";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardActionArea from "@mui/material/CardActionArea";
-import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
@@ -14,13 +10,14 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
-import { Link as RouterLink, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { ProductSortOption, ProductCategory } from "@petcare/shared";
 import { useGetAllProductsQuery } from "../features/products/productApi";
-import { formatPrice } from "../lib/format";
-
-const PRODUCT_IMAGE_HEIGHT = 180;
+import ProductCard from "../components/product/ProductCard";
+import CollectionTile from "../components/home/CollectionTile";
+import Reveal from "../components/ui/Reveal";
+import { PawMark } from "../assets/art";
+import { CATEGORY_MEDIA } from "../data/media";
 
 const SORT_OPTIONS: { value: ProductSortOption; label: string }[] = [
   { value: ProductSortOption.NEWEST, label: "Newest" },
@@ -35,6 +32,10 @@ const CATEGORY_OPTIONS: { value: ProductCategory; label: string }[] = [
   { value: ProductCategory.SUPPLEMENT, label: "Supplements" },
   { value: ProductCategory.HYGIENE, label: "Hygiene" },
 ];
+
+const ALL_PRODUCTS_LIMIT = 1000;
+
+const CARDS_PER_ROW = 4;
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,6 +55,7 @@ export default function ProductsPage() {
     order,
     productCategory: category ?? undefined,
     search: search || undefined,
+    limit: ALL_PRODUCTS_LIMIT,
   });
 
   const updateParam = (key: string, value: string | null) => {
@@ -69,10 +71,6 @@ export default function ProductsPage() {
     updateParam("order", value === ProductSortOption.NEWEST ? null : value);
   };
 
-  const handleCategoryClick = (value: ProductCategory | null) => {
-    updateParam("category", value);
-  };
-
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
     updateParam("search", searchInputRef.current?.value.trim() || null);
@@ -84,158 +82,112 @@ export default function ProductsPage() {
 
   return (
     <Container sx={{ py: 4 }}>
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, sm: 3 }}>
-          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-            Category
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "row", sm: "column" },
-              flexWrap: "wrap",
-              gap: 1,
-            }}
-          >
-            <Button
-              variant={!category ? "contained" : "outlined"}
-              onClick={() => handleCategoryClick(null)}
-              sx={{ justifyContent: "flex-start" }}
-            >
-              All Categories
-            </Button>
-            {CATEGORY_OPTIONS.map((opt) => (
-              <Button
-                key={opt.value}
-                variant={category === opt.value ? "contained" : "outlined"}
-                onClick={() => handleCategoryClick(opt.value)}
-                sx={{ justifyContent: "flex-start" }}
-              >
-                {opt.label}
-              </Button>
-            ))}
-          </Box>
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 9 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 2,
-              mb: 2,
-            }}
-          >
-            <Box>
-              <Typography variant="h4">Products</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {products.length} products
-              </Typography>
-            </Box>
-
-            <Box
-              component="form"
-              onSubmit={handleSearchSubmit}
-              sx={{ display: "flex", gap: 1 }}
-            >
-              <TextField
-                size="small"
-                placeholder="Search products..."
-                defaultValue={search}
-                inputRef={searchInputRef}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
+      <Box sx={{ mb: { xs: 5, md: 7 } }}>
+        <Typography variant="h2" align="center" sx={{ mb: { xs: 3, md: 4 } }}>
+          Our Pet Care Collections
+        </Typography>
+        <Grid
+          container
+          spacing={{ xs: 2.5, sm: 3, md: 4 }}
+          sx={{ justifyContent: "center" }}
+        >
+          <Grid size={{ xs: 4, sm: 4, md: 12 / 6 }}>
+            <Reveal>
+              <CollectionTile
+                to="/products"
+                label="All"
+                icon={PawMark}
+                active={!category}
               />
-              <Button type="submit" variant="contained">
-                Search
-              </Button>
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
-            {SORT_OPTIONS.map((opt) => (
-              <Button
-                key={opt.value}
-                variant={order === opt.value ? "contained" : "outlined"}
-                onClick={() => handleSortClick(opt.value)}
-              >
-                {opt.label}
-              </Button>
-            ))}
-          </Box>
-
-          {products.length === 0 ? (
-            <Alert severity="info">No products match your filters.</Alert>
-          ) : (
-            <Grid container spacing={3}>
-              {products.map((product) => (
-                <Grid key={product._id} size={{ xs: 12, sm: 6, md: 4 }}>
-                  <Card sx={{ overflow: "hidden" }}>
-                    <CardActionArea
-                      component={RouterLink}
-                      to={`/product/${product._id}`}
-                    >
-                      {product.productImages[0] ? (
-                        <Box
-                          sx={{
-                            height: PRODUCT_IMAGE_HEIGHT,
-                            bgcolor: "action.hover",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <CardMedia
-                            component="img"
-                            image={product.productImages[0]}
-                            alt={product.productName}
-                            sx={{
-                              height: "100%",
-                              width: "100%",
-                              objectFit: "contain",
-                            }}
-                          />
-                        </Box>
-                      ) : (
-                        <Box
-                          sx={{
-                            height: PRODUCT_IMAGE_HEIGHT,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            bgcolor: "action.hover",
-                          }}
-                        >
-                          <Inventory2Icon
-                            sx={{ fontSize: 64, color: "text.disabled" }}
-                          />
-                        </Box>
-                      )}
-                      <CardContent>
-                        <Typography variant="h6">
-                          {product.productName}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {formatPrice(product.productPrice)}
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          )}
+            </Reveal>
+          </Grid>
+          {CATEGORY_OPTIONS.map((opt, i) => {
+            const photo = CATEGORY_MEDIA[opt.value];
+            return (
+              <Grid key={opt.value} size={{ xs: 4, sm: 4, md: 12 / 6 }}>
+                <Reveal delay={(i + 1) * 60}>
+                  <CollectionTile
+                    to={`/products?category=${opt.value}`}
+                    label={opt.label}
+                    src={photo?.src}
+                    alt={photo?.alt}
+                    active={category === opt.value}
+                  />
+                </Reveal>
+              </Grid>
+            );
+          })}
         </Grid>
-      </Grid>
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
+          mb: 2,
+        }}
+      >
+        <Box>
+          <Typography variant="h4">Products</Typography>
+          <Typography variant="body2" color="text.secondary">
+            {products.length} products
+          </Typography>
+        </Box>
+
+        <Box
+          component="form"
+          onSubmit={handleSearchSubmit}
+          sx={{ display: "flex", gap: 1 }}
+        >
+          <TextField
+            size="small"
+            placeholder="Search products..."
+            defaultValue={search}
+            inputRef={searchInputRef}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          <Button type="submit" variant="contained">
+            Search
+          </Button>
+        </Box>
+      </Box>
+
+      <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
+        {SORT_OPTIONS.map((opt) => (
+          <Button
+            key={opt.value}
+            variant={order === opt.value ? "contained" : "outlined"}
+            onClick={() => handleSortClick(opt.value)}
+          >
+            {opt.label}
+          </Button>
+        ))}
+      </Box>
+
+      {products.length === 0 ? (
+        <Alert severity="info">No products match your filters.</Alert>
+      ) : (
+        <Grid container spacing={3}>
+          {products.map((product, i) => (
+            <Grid key={product._id} size={{ xs: 6, sm: 6, md: 3 }}>
+              <Reveal delay={(i % CARDS_PER_ROW) * 80}>
+                <ProductCard product={product} />
+              </Reveal>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Container>
   );
 }
